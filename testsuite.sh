@@ -73,6 +73,7 @@ function testEe()
     current_codebase="ee"
     installEnvironment
     executeCommonAssertions
+    executeEeNfsAssertions
 }
 
 function testEeNoNfs()
@@ -98,21 +99,38 @@ function executeCommonAssertions()
     # Make sure Magento was installed and is accessible
     assertMagentoInstalledSuccessfully
     assertMagentoAccessible
+    assertMagentoCliWorks
 
     # Make sure Magento is still accessible after restarting services
     assertMysqlRestartWorks
     assertApacheRestartWorks
     assertMagentoAccessible
+
+    # Make sure Magento reinstall script works
+    assertMagentoReinstallWorks
+    assertMagentoAccessible
+}
+
+function executeEeNfsAssertions()
+{
+    assertMagentoSwitchToEeWorks
+    assertMagentoAccessible
+    assertMagentoSwitchToCeWorks
+    assertMagentoAccessible
 }
 
 function downloadVagrantProject()
 {
+    echo "## downloadVagrantProject"
+    echo "## downloadVagrantProject" >>${current_log_file_path}
     cd ${tests_dir}
     git clone git@github.com:paliarush/magento2-vagrant-for-developers.git ${vagrant_dir} >>${current_log_file_path} 2>&1
 }
 
 function configureVagrantProject()
 {
+    echo "## configureVagrantProject"
+    echo "## configureVagrantProject" >>${current_log_file_path}
     current_config_path="${test_config_dir}/${current_config_name}_config.yaml"
     if [ -f ${current_config_path} ]; then
         cp ${current_config_path} "${vagrant_dir}/etc/config.yaml"
@@ -121,12 +139,16 @@ function configureVagrantProject()
 
 function deployVagrantProject()
 {
+    echo "## deployVagrantProject"
+    echo "## deployVagrantProject" >>${current_log_file_path}
     cd ${vagrant_dir}
     bash init_project.sh >>${current_log_file_path} 2>&1
 }
 
 function stashMagentoCodebase()
 {
+    echo "## stashMagentoCodebase"
+    echo "## stashMagentoCodebase" >>${current_log_file_path}
     if [ -d ${vagrant_dir}/magento2ce ]; then
         magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}"
         rm -rf ${magento_stash_dir}
@@ -141,6 +163,8 @@ function stashMagentoCodebase()
 
 function unstashMagentoCodebase()
 {
+    echo "## unstashMagentoCodebase"
+    echo "## unstashMagentoCodebase" >>${current_log_file_path}
     magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}/magento2ce"
     if [ -d ${magento_stash_dir} ]; then
         mv ${magento_stash_dir} ${vagrant_dir}/magento2ce
@@ -160,6 +184,8 @@ function clearLogs()
 
 function clearTestTmp()
 {
+    echo "## clearTestTmp"
+    echo "## clearTestTmp" >>${current_log_file_path}
     if [ -e ${vagrant_dir} ]; then
         cd ${vagrant_dir}
         vagrant destroy -f &>/dev/null
@@ -173,6 +199,8 @@ function clearTestTmp()
 
 function assertMagentoInstalledSuccessfully()
 {
+    echo "## assertMagentoInstalledSuccessfully"
+    echo "## assertMagentoInstalledSuccessfully" >>${current_log_file_path}
     cd ${tests_dir}
     output_log="$(cat ${current_log_file_path})"
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
@@ -184,28 +212,78 @@ function assertMagentoInstalledSuccessfully()
 
 function assertMagentoAccessible()
 {
+    echo "## assertMagentoAccessible"
+    echo "## assertMagentoAccessible" >>${current_log_file_path}
     cd ${tests_dir}
     magento_home_page_content="$(curl -sL ${current_magento_base_url})"
-    regexp="Magento. All rights reserved."
-    assertTrue 'Magento was installed but main page is not accessible.' '[[ ${magento_home_page_content} =~ ${regexp} ]]'
+    pattern="Magento. All rights reserved."
+    assertTrue 'Magento was installed but main page is not accessible.' '[[ ${magento_home_page_content} =~ ${pattern} ]]'
 }
 
 function assertMysqlRestartWorks()
 {
+    echo "## assertMysqlRestartWorks"
+    echo "## assertMysqlRestartWorks" >>${current_log_file_path}
     cd ${vagrant_dir}
     cmd_output="$(vagrant ssh -c 'sudo service mysql restart' >>${current_log_file_path} 2>&1)"
-    regexp="mysql start/running, process [0-9]+"
+    pattern="mysql start/running, process [0-9]+"
     output_log="$(tail -n2 ${current_log_file_path})"
-    assertTrue 'MySQL server restart attempt failed' '[[ ${output_log} =~ ${regexp} ]]'
+    assertTrue 'MySQL server restart attempt failed' '[[ ${output_log} =~ ${pattern} ]]'
 }
 
 function assertApacheRestartWorks()
 {
+    echo "## assertApacheRestartWorks"
+    echo "## assertApacheRestartWorks" >>${current_log_file_path}
     cd ${vagrant_dir}
     cmd_output="$(vagrant ssh -c 'sudo service apache2 restart' >>${current_log_file_path} 2>&1)"
-    regexp="\[ OK \]"
+    pattern="\[ OK \]"
     output_log="$(tail -n2 ${current_log_file_path})"
-    assertTrue 'Apache restart attempt failed' '[[ ${output_log} =~ ${regexp} ]]'
+    assertTrue 'Apache restart attempt failed' '[[ ${output_log} =~ ${pattern} ]]'
+}
+
+function assertMagentoReinstallWorks()
+{
+    echo "## assertMagentoReinstallWorks"
+    echo "## assertMagentoReinstallWorks" >>${current_log_file_path}
+    cd ${vagrant_dir}
+    bash m-reinstall >>${current_log_file_path} 2>&1
+    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    output_log="$(tail -n5 ${current_log_file_path})"
+    assertTrue 'Magento reinstallation failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
+}
+
+function assertMagentoSwitchToEeWorks()
+{
+    echo "## assertMagentoSwitchToEeWorks"
+    echo "## assertMagentoSwitchToEeWorks" >>${current_log_file_path}
+    cd ${vagrant_dir}
+    bash m-switch-to-ee >>${current_log_file_path} 2>&1
+    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    output_log="$(tail -n5 ${current_log_file_path})"
+    assertTrue 'Magento switch to EE failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
+}
+
+function assertMagentoSwitchToCeWorks()
+{
+    echo "## assertMagentoSwitchToCeWorks"
+    echo "## assertMagentoSwitchToCeWorks" >>${current_log_file_path}
+    cd ${vagrant_dir}
+    bash m-switch-to-ce >>${current_log_file_path} 2>&1
+    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    output_log="$(tail -n5 ${current_log_file_path})"
+    assertTrue 'Magento switch to CE failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
+}
+
+function assertMagentoCliWorks()
+{
+    echo "## assertMagentoCliWorks"
+    echo "## assertMagentoCliWorks" >>${current_log_file_path}
+    cd ${vagrant_dir}
+    bash m-bin-magento list >>${current_log_file_path} 2>&1
+    pattern="theme:uninstall"
+    output_log="$(tail -n2 ${current_log_file_path})"
+    assertTrue 'Magento CLI does not work.' '[[ ${output_log} =~ ${pattern} ]]'
 }
 
 ## Call and Run all Tests
