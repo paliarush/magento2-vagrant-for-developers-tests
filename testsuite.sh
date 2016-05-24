@@ -2,14 +2,15 @@
 
 ## Global variables declaration
 
-test_project_root=$(cd "$(dirname "$0")"; pwd)
-vagrant_project_config_dir="${test_project_root}/_files"
-vagrant_project_dir="${test_project_root}/tmp/test/magento2-vagrant"
-init_project_log_file_path="${test_project_root}/tmp/test/current-test.log"
-cached_magento_codebases_path="${test_project_root}/tmp/testsuite/codebases"
-logs_dir="${test_project_root}/logs"
+tests_dir=$(cd "$(dirname "$0")"; pwd)
+test_config_dir="${tests_dir}/_files"
+vagrant_dir="${tests_dir}/tmp/test/magento2-vagrant"
+current_log_file_path="${tests_dir}/tmp/test/current-test.log"
+magento_codebase_stash_dir="${tests_dir}/tmp/testsuite/codebases"
+logs_dir="${tests_dir}/logs"
 current_config_name=""
 current_codebase=""
+current_magento_base_url=""
 
 ## Setup and tear down
 
@@ -20,6 +21,8 @@ function oneTimeSetUp
 
 function setUp()
 {
+    echo "===TEST START==="
+    stashMagentoCodebase
     clearTestTmp
 }
 
@@ -28,6 +31,8 @@ function tearDown()
     stashLogs
     stashMagentoCodebase
     clearTestTmp
+    echo "====TEST END====
+    "
 }
 
 function oneTimeTearDown()
@@ -40,77 +45,93 @@ See logs in ${logs_dir}"
 
 function testNoCustomConfig()
 {
-    current_config_name="dist"
+    current_config_name="no_custom_config"
     current_codebase="ce"
-    performStandardTest
+    installEnvironment
+    executeCommonAssertions
 }
 
 function testCePreferSource()
 {
     current_config_name="ce_prefer_source"
     current_codebase="ce"
-    performStandardTest
+    installEnvironment
+    executeCommonAssertions
 }
 
 function testCePhp5()
 {
     current_config_name="ce_php5"
     current_codebase="ce"
-    performStandardTest
+    installEnvironment
+    executeCommonAssertions
 }
 
 function testEe()
 {
     current_config_name="ee"
     current_codebase="ee"
-    performStandardTest
+    installEnvironment
+    executeCommonAssertions
 }
 
 function testEeNoNfs()
 {
     current_config_name="ee_no_nfs"
     current_codebase="ee"
-    performStandardTest
+    installEnvironment
+    executeCommonAssertions
 }
 
 ## Helper methods
 
-function performStandardTest()
+function installEnvironment()
 {
     downloadVagrantProject
     unstashMagentoCodebase
     configureVagrantProject
     deployVagrantProject
-    assertMagentoInstalled
+}
+
+function executeCommonAssertions()
+{
+    # Make sure Magento was installed and is accessible
+    assertMagentoInstalledSuccessfully
+    assertMagentoAccessible
+
+    # Make sure Magento is still accessible after restarting services
+    assertMysqlRestartWorks
+    assertApacheRestartWorks
+    assertMagentoAccessible
 }
 
 function downloadVagrantProject()
 {
-    cd ${test_project_root}
-    git clone git@github.com:paliarush/magento2-vagrant-for-developers.git ${vagrant_project_dir} >>${init_project_log_file_path} 2>&1
+    cd ${tests_dir}
+    git clone git@github.com:paliarush/magento2-vagrant-for-developers.git ${vagrant_dir} >>${current_log_file_path} 2>&1
 }
 
 function configureVagrantProject()
 {
-    current_config_path="${vagrant_project_config_dir}/${current_config_name}_config.yaml"
+    current_config_path="${test_config_dir}/${current_config_name}_config.yaml"
     if [ -f ${current_config_path} ]; then
-        cp ${current_config_path} "${vagrant_project_dir}/etc/config.yaml"
+        cp ${current_config_path} "${vagrant_dir}/etc/config.yaml"
     fi
 }
 
 function deployVagrantProject()
 {
-    cd ${vagrant_project_dir}
-    bash init_project.sh >>${init_project_log_file_path} 2>&1
+    cd ${vagrant_dir}
+    bash init_project.sh >>${current_log_file_path} 2>&1
 }
 
 function stashMagentoCodebase()
 {
-    if [ -d ${vagrant_project_dir}/magento2ce ]; then
-        magento_stash_dir="${cached_magento_codebases_path}/${current_codebase}"
+    if [ -d ${vagrant_dir}/magento2ce ]; then
+        magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}"
         rm -rf ${magento_stash_dir}
         mkdir -p ${magento_stash_dir}
-        mv ${vagrant_project_dir}/magento2ce ${magento_stash_dir}/magento2ce
+        mv ${vagrant_dir}/magento2ce ${magento_stash_dir}/magento2ce
         rm -rf ${magento_stash_dir}/magento2ce/var/*
         rm -rf ${magento_stash_dir}/magento2ce/vendor/*
         rm -rf ${magento_stash_dir}/magento2ce/pub/static/*
@@ -120,16 +141,16 @@ function stashMagentoCodebase()
 
 function unstashMagentoCodebase()
 {
-    magento_stash_dir="${cached_magento_codebases_path}/${current_codebase}/magento2ce"
+    magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}/magento2ce"
     if [ -d ${magento_stash_dir} ]; then
-        mv ${magento_stash_dir} ${vagrant_project_dir}/magento2ce
+        mv ${magento_stash_dir} ${vagrant_dir}/magento2ce
     fi
 }
 
 function stashLogs()
 {
     log_file_path="${logs_dir}/${current_config_name}.log"
-    cp ${init_project_log_file_path} ${logs_dir}/${current_config_name}.log
+    cp ${current_log_file_path} ${logs_dir}/${current_config_name}.log
 }
 
 function clearLogs()
@@ -139,28 +160,52 @@ function clearLogs()
 
 function clearTestTmp()
 {
-    if [ -e ${vagrant_project_dir} ]; then
-        cd ${vagrant_project_dir}
+    if [ -e ${vagrant_dir} ]; then
+        cd ${vagrant_dir}
         vagrant destroy -f &>/dev/null
-        cd ${test_project_root}
-        rm -rf ${vagrant_project_dir}
+        cd ${tests_dir}
+        rm -rf ${vagrant_dir}
     fi
-    rm -f ${init_project_log_file_path}
+    rm -f ${current_log_file_path}
 }
 
-function assertMagentoInstalled()
+## Assertions
+
+function assertMagentoInstalledSuccessfully()
 {
-    cd ${test_project_root}
-    output_log="$(cat ${init_project_log_file_path})"
+    cd ${tests_dir}
+    output_log="$(cat ${current_log_file_path})"
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
     if [[ ! ${output_log} =~ ${pattern} ]]; then
         fail "Magento was not installed successfully (Frontend URL is not available in the init script output)"
-    else
-        magento_base_url=${BASH_REMATCH[1]}
-        magento_home_page_content="$(curl -sL --max-time 60 --connect-timeout 60 ${magento_base_url})"
-        expected_regexp="Magento. All rights reserved."
-        assertTrue 'Magento was installed but main page is not accessible.' '[[ ${magento_home_page_content} =~ ${expected_regexp} ]]'
     fi
+    current_magento_base_url=${BASH_REMATCH[1]}
+}
+
+function assertMagentoAccessible()
+{
+    cd ${tests_dir}
+    magento_home_page_content="$(curl -sL ${current_magento_base_url})"
+    regexp="Magento. All rights reserved."
+    assertTrue 'Magento was installed but main page is not accessible.' '[[ ${magento_home_page_content} =~ ${regexp} ]]'
+}
+
+function assertMysqlRestartWorks()
+{
+    cd ${vagrant_dir}
+    cmd_output="$(vagrant ssh -c 'sudo service mysql restart' >>${current_log_file_path} 2>&1)"
+    regexp="mysql start/running, process [0-9]+"
+    output_log="$(tail -n2 ${current_log_file_path})"
+    assertTrue 'MySQL server restart attempt failed' '[[ ${output_log} =~ ${regexp} ]]'
+}
+
+function assertApacheRestartWorks()
+{
+    cd ${vagrant_dir}
+    cmd_output="$(vagrant ssh -c 'sudo service apache2 restart' >>${current_log_file_path} 2>&1)"
+    regexp="\[ OK \]"
+    output_log="$(tail -n2 ${current_log_file_path})"
+    assertTrue 'Apache restart attempt failed' '[[ ${output_log} =~ ${regexp} ]]'
 }
 
 ## Call and Run all Tests
