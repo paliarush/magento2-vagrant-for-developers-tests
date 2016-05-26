@@ -1,6 +1,6 @@
 repository_url:
-  ce: "git@github.corp.magento.com:magento2/magento2ce.git"
-  ee: "git@github.corp.magento.com:magento2/magento2ee.git"
+  ce: "git@github.com:magento/magento2ce.git"
+  ee: "git@github.com:magento/magento2ee.git"
 guest:
   # NFS will be used for folder synchronization on *nix and OSX hosts by default
   use_nfs: 0

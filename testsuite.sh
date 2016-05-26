@@ -1,5 +1,10 @@
 #! /usr/bin/env bash
 
+## Configuration
+
+vagrant_project_repository_url="git@github.com:paliarush/magento2-vagrant-for-developers.git"
+vagrant_project_branch="2.0"
+
 ## Global variables declaration
 
 tests_dir=$(cd "$(dirname "$0")"; pwd)
@@ -124,7 +129,9 @@ function downloadVagrantProject()
     echo "## downloadVagrantProject"
     echo "## downloadVagrantProject" >>${current_log_file_path}
     cd ${tests_dir}
-    git clone git@github.com:paliarush/magento2-vagrant-for-developers.git ${vagrant_dir} >>${current_log_file_path} 2>&1
+    git clone ${vagrant_project_repository_url} ${vagrant_dir} >>${current_log_file_path} 2>&1
+    cd ${vagrant_dir}
+    git checkout ${vagrant_project_branch} >>${current_log_file_path} 2>&1
 }
 
 function configureVagrantProject()
