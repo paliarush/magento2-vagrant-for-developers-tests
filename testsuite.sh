@@ -114,6 +114,8 @@ function executeCommonAssertions()
     # Make sure Magento reinstall script works
     assertMagentoReinstallWorks
     assertMagentoAccessible
+
+    assertEmailLoggingWorks
 }
 
 function executeEeNfsAssertions()
@@ -291,6 +293,27 @@ function assertMagentoCliWorks()
     pattern="theme:uninstall"
     output_log="$(tail -n2 ${current_log_file_path})"
     assertTrue 'Magento CLI does not work.' '[[ ${output_log} =~ ${pattern} ]]'
+}
+
+function assertEmailLoggingWorks()
+{
+    echo "## assertEmailLoggingWorks"
+    echo "## assertEmailLoggingWorks" >>${current_log_file_path}
+    curl -X POST -F 'email=subscriber@example.com' "${current_magento_base_url}/newsletter/subscriber/new/"
+
+    # Check if email is logged and identify its path
+    list_of_logged_emails="$(ls -l ${vagrant_dir}/log/email)"
+    pattern="([^ ]+Newsletter subscription success\.html)"
+    if [[ ! ${list_of_logged_emails} =~ ${pattern} ]]; then
+        fail "Email logging is broken (newsletter subscription email is not logged to 'vagrant-magento/log/email')"
+    fi
+    email_file_name=${BASH_REMATCH[1]}
+    email_file_path="${vagrant_dir}/log/email/${email_file_name}"
+
+    # Make sure content of the email is an HTML
+    email_content="$(cat "${email_file_path}")"
+    pattern="^<!DOCTYPE html PUBLIC.*</html>$"
+    assertTrue 'Email is logged, but content is invalid' '[[ ${email_content} =~ ${pattern} ]]'
 }
 
 ## Call and Run all Tests
