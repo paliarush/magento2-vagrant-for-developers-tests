@@ -56,6 +56,14 @@ function testNoCustomConfig()
     executeCommonAssertions
 }
 
+function testUpgradeNoCustomConfig()
+{
+    current_config_name="upgrade_no_custom_config"
+    current_codebase="ce"
+    installEnvironmentWithUpgrade
+    executeCommonAssertions
+}
+
 function testCePreferSource()
 {
     current_config_name="ce_prefer_source"
@@ -99,6 +107,15 @@ function installEnvironment()
     deployVagrantProject
 }
 
+function installEnvironmentWithUpgrade()
+{
+    downloadBaseVersionOfVagrantProject
+    unstashMagentoCodebase
+    configureVagrantProject
+    deployVagrantProject
+    upgradeVagrantProject
+}
+
 function executeCommonAssertions()
 {
     # Make sure Magento was installed and is accessible
@@ -134,6 +151,28 @@ function downloadVagrantProject()
     git clone ${vagrant_project_repository_url} ${vagrant_dir} >>${current_log_file_path} 2>&1
     cd ${vagrant_dir}
     git checkout ${vagrant_project_branch} >>${current_log_file_path} 2>&1
+}
+
+function downloadBaseVersionOfVagrantProject()
+{
+    echo "## downloadBaseVersionOfVagrantProject"
+    echo "## downloadBaseVersionOfVagrantProject" >>${current_log_file_path}
+    cd ${tests_dir}
+    git clone git@github.com:paliarush/magento2-vagrant-for-developers.git ${vagrant_dir} >>${current_log_file_path} 2>&1
+    cd ${vagrant_dir}
+    git checkout tags/v2.0.0 >>${current_log_file_path} 2>&1
+    echo '{"github-oauth": {"github.com": "sampletoken"}}' >"${vagrant_dir}/etc/composer/auth.json"
+}
+
+function upgradeVagrantProject()
+{
+    echo "## upgradeVagrantProject"
+    echo "## upgradeVagrantProject" >>${current_log_file_path}
+    cd ${vagrant_dir}
+    git remote add repository-under-test ${vagrant_project_repository_url} >>${current_log_file_path} 2>&1
+    git fetch repository-under-test >>${current_log_file_path} 2>&1
+    git checkout -b branch-under-test repository-under-test/${vagrant_project_branch} >>${current_log_file_path} 2>&1
+    vagrant reload >>${current_log_file_path} 2>&1
 }
 
 function configureVagrantProject()
