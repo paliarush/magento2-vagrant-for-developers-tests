@@ -27,8 +27,6 @@ function oneTimeSetUp
 function setUp()
 {
     echo "===TEST START==="
-    stashMagentoCodebase
-    clearTestTmp
 }
 
 function tearDown()
@@ -101,6 +99,8 @@ function testEeNoNfs()
 
 function installEnvironment()
 {
+    stashMagentoCodebase
+    clearTestTmp
     downloadVagrantProject
     unstashMagentoCodebase
     configureVagrantProject
@@ -109,6 +109,8 @@ function installEnvironment()
 
 function installEnvironmentWithUpgrade()
 {
+    stashMagentoCodebase
+    clearTestTmp
     downloadBaseVersionOfVagrantProject
     unstashMagentoCodebase
     configureVagrantProject
@@ -161,6 +163,8 @@ function downloadBaseVersionOfVagrantProject()
     git clone git@github.com:paliarush/magento2-vagrant-for-developers.git ${vagrant_dir} >>${current_log_file_path} 2>&1
     cd ${vagrant_dir}
     git checkout tags/v2.0.0 >>${current_log_file_path} 2>&1
+    # Make sure that older box version is used
+    sed -i.back 's|config.vm.box_version = "~> 1.0"|config.vm.box_version = "= 1.0"|g' "${vagrant_dir}/Vagrantfile" >>${current_log_file_path} 2>&1
     echo '{"github-oauth": {"github.com": "sampletoken"}}' >"${vagrant_dir}/etc/composer/auth.json"
 }
 
@@ -168,6 +172,8 @@ function upgradeVagrantProject()
 {
     echo "## upgradeVagrantProject"
     echo "## upgradeVagrantProject" >>${current_log_file_path}
+    # Reset changes done to box version requirements
+    git checkout "${vagrant_dir}/Vagrantfile" >>${current_log_file_path} 2>&1
     cd ${vagrant_dir}
     git remote add repository-under-test ${vagrant_project_repository_url} >>${current_log_file_path} 2>&1
     git fetch repository-under-test >>${current_log_file_path} 2>&1
