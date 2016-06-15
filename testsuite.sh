@@ -135,6 +135,9 @@ function executeCommonAssertions()
     assertMagentoAccessible
 
     assertEmailLoggingWorks
+
+    assertVarnishEnablingWorks
+    assertVarnishDisablingWorks
 }
 
 function executeEeNfsAssertions()
@@ -359,6 +362,36 @@ function assertEmailLoggingWorks()
     email_content="$(cat "${email_file_path}")"
     pattern="^<!DOCTYPE html PUBLIC.*</html>$"
     assertTrue 'Email is logged, but content is invalid' '[[ ${email_content} =~ ${pattern} ]]'
+}
+
+function assertVarnishEnablingWorks()
+{
+    echo "## assertVarnishEnablingWorks"
+    echo "## assertVarnishEnablingWorks" >>${current_log_file_path}
+
+    cd ${vagrant_dir}
+    bash m-varnish enable >>${current_log_file_path} 2>&1
+
+    listenerOnPort80="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::80[^0-9]'')"
+    assertTrue 'Varnish is not listening on port 80' '[[ ${listenerOnPort80} =~ varnishd ]]'
+
+    listenerOnPort8080="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::8080[^0-9]'')"
+    assertTrue 'Apache is not listening on port 8080' '[[ ${listenerOnPort8080} =~ apache2 ]]'
+}
+
+function assertVarnishDisablingWorks()
+{
+    echo "## assertVarnishDisablingWorks"
+    echo "## assertVarnishDisablingWorks" >>${current_log_file_path}
+
+    cd ${vagrant_dir}
+    bash m-varnish disable >>${current_log_file_path} 2>&1
+
+    listenerOnPort80="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::80[^0-9]'')"
+    assertTrue 'Apache is not listening on port 80' '[[ ${listenerOnPort80} =~ apache2 ]]'
+
+    listenerOnPort8080="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::8080[^0-9]'')"
+    assertFalse 'Varnish shout not listen on port 8080' '[[ ${listenerOnPort8080} =~ varnishd ]]'
 }
 
 ## Call and Run all Tests
