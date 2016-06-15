@@ -51,6 +51,7 @@ function testNoCustomConfig()
     current_config_name="no_custom_config"
     current_codebase="ce"
     installEnvironment
+    assertVarnishDisabled
     executeCommonAssertions
 }
 
@@ -62,11 +63,12 @@ function testUpgradeNoCustomConfig()
     executeCommonAssertions
 }
 
-function testCePreferSource()
+function testCePreferSourceVarnishEnabled()
 {
-    current_config_name="ce_prefer_source"
+    current_config_name="ce_prefer_source_varnish_enabled"
     current_codebase="ce"
     installEnvironment
+    assertVarnishEnabled
     executeCommonAssertions
 }
 
@@ -136,6 +138,7 @@ function executeCommonAssertions()
 
     assertEmailLoggingWorks
 
+    # Check if varnish can be enabled/disabled
     assertVarnishEnablingWorks
     assertVarnishDisablingWorks
 }
@@ -371,6 +374,14 @@ function assertVarnishEnablingWorks()
 
     cd ${vagrant_dir}
     bash m-varnish enable >>${current_log_file_path} 2>&1
+    assertVarnishEnabled
+    assertMagentoAccessible
+}
+
+function assertVarnishEnabled()
+{
+    echo "## assertVarnishEnabled"
+    echo "## assertVarnishEnabled" >>${current_log_file_path}
 
     listenerOnPort80="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::80[^0-9]'')"
     assertTrue 'Varnish is not listening on port 80' '[[ ${listenerOnPort80} =~ varnishd ]]'
@@ -386,6 +397,15 @@ function assertVarnishDisablingWorks()
 
     cd ${vagrant_dir}
     bash m-varnish disable >>${current_log_file_path} 2>&1
+
+    assertVarnishDisabled
+    assertMagentoAccessible
+}
+
+function assertVarnishDisabled()
+{
+    echo "## assertVarnishDisabled"
+    echo "## assertVarnishDisabled" >>${current_log_file_path}
 
     listenerOnPort80="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::80[^0-9]'')"
     assertTrue 'Apache is not listening on port 80' '[[ ${listenerOnPort80} =~ apache2 ]]'
