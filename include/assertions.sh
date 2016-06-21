@@ -1,5 +1,42 @@
 #! /usr/bin/env bash
 
+## Assertion groups
+
+function executeCommonAssertions()
+{
+    # Make sure Magento was installed and is accessible
+    assertMagentoInstalledSuccessfully
+    assertMagentoFrontendAccessible
+    assertMagentoCliWorks
+
+    # Make sure Magento is still accessible after restarting services
+    assertMysqlRestartWorks
+    assertApacheRestartWorks
+    assertMagentoFrontendAccessible
+
+    # Make sure Magento reinstall script works
+    assertMagentoReinstallWorks
+    assertMagentoFrontendAccessible
+
+    assertEmailLoggingWorks
+
+    # Check if varnish can be enabled/disabled
+    assertVarnishEnablingWorks
+    assertVarnishDisablingWorks
+}
+
+function executeEeNfsAssertions()
+{
+    assertMagentoSwitchToEeWorks
+    assertMagentoFrontendAccessible
+    assertMagentoEditionIsEE
+    assertMagentoSwitchToCeWorks
+    assertMagentoFrontendAccessible
+    assertMagentoEditionIsCE
+}
+
+## Assertions
+
 function assertMagentoInstalledSuccessfully()
 {
     echo "## assertMagentoInstalledSuccessfully"
@@ -13,14 +50,40 @@ function assertMagentoInstalledSuccessfully()
     current_magento_base_url=${BASH_REMATCH[1]}
 }
 
-function assertMagentoAccessible()
+function assertMagentoFrontendAccessible()
 {
-    echo "## assertMagentoAccessible"
-    echo "## assertMagentoAccessible" >>${current_log_file_path}
+    echo "## assertMagentoFrontendAccessible"
+    echo "## assertMagentoFrontendAccessible" >>${current_log_file_path}
     cd ${tests_dir}
     magento_home_page_content="$(curl -sL ${current_magento_base_url})"
     pattern="Magento. All rights reserved."
     assertTrue 'Magento was installed but main page is not accessible.' '[[ ${magento_home_page_content} =~ ${pattern} ]]'
+}
+
+function assertMagentoEditionIsCE()
+{
+    echo "## assertMagentoEditionIsCE"
+    echo "## assertMagentoEditionIsCE" >>${current_log_file_path}
+    cd ${tests_dir}
+    admin_token="$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
+        -H "Content-Type:application/json" \
+        -d '{"username":"admin", "password":"123123q"}')"
+    rest_schema="$(curl -sb -x GET "${current_magento_base_url}rest/default/schema" -H "Authorization:Bearer ${admin_token}")"
+    pattern='"title":"Magento Community"'
+    assertTrue 'Current edition is not Community.' '[[ ${rest_schema} =~ ${pattern} ]]'
+}
+
+function assertMagentoEditionIsEE()
+{
+    echo "## assertMagentoEditionIsEE"
+    echo "## assertMagentoEditionIsEE" >>${current_log_file_path}
+    cd ${tests_dir}
+    admin_token="$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
+        -H "Content-Type:application/json" \
+        -d '{"username":"admin", "password":"123123q"}')"
+    rest_schema="$(curl -sb -x GET "${current_magento_base_url}rest/default/schema" -H "Authorization:Bearer ${admin_token}")"
+    pattern='"title":"Magento Enterprise"'
+    assertTrue 'Current edition is not Enterprise.' '[[ ${rest_schema} =~ ${pattern} ]]'
 }
 
 function assertMysqlRestartWorks()
@@ -61,7 +124,7 @@ function assertMagentoSwitchToEeWorks()
     echo "## assertMagentoSwitchToEeWorks"
     echo "## assertMagentoSwitchToEeWorks" >>${current_log_file_path}
     cd ${vagrant_dir}
-    bash m-switch-to-ee >>${current_log_file_path} 2>&1
+    bash m-switch-to-ee -f >>${current_log_file_path} 2>&1
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
     assertTrue 'Magento switch to EE failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
@@ -72,7 +135,7 @@ function assertMagentoSwitchToCeWorks()
     echo "## assertMagentoSwitchToCeWorks"
     echo "## assertMagentoSwitchToCeWorks" >>${current_log_file_path}
     cd ${vagrant_dir}
-    bash m-switch-to-ce >>${current_log_file_path} 2>&1
+    bash m-switch-to-ce -f >>${current_log_file_path} 2>&1
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
     assertTrue 'Magento switch to CE failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
@@ -118,7 +181,7 @@ function assertVarnishEnablingWorks()
     cd ${vagrant_dir}
     bash m-varnish enable >>${current_log_file_path} 2>&1
     assertVarnishEnabled
-    assertMagentoAccessible
+    assertMagentoFrontendAccessible
 }
 
 function assertVarnishEnabled()
@@ -142,7 +205,7 @@ function assertVarnishDisablingWorks()
     bash m-varnish disable >>${current_log_file_path} 2>&1
 
     assertVarnishDisabled
-    assertMagentoAccessible
+    assertMagentoFrontendAccessible
 }
 
 function assertVarnishDisabled()

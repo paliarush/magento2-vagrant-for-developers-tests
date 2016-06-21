@@ -43,6 +43,17 @@ function testNoCustomConfig()
     installEnvironment
     assertVarnishDisabled
     executeCommonAssertions
+    assertMagentoEditionIsCE
+}
+
+function testEe()
+{
+    current_config_name="ee"
+    current_codebase="ee"
+    installEnvironment
+    executeCommonAssertions
+    assertMagentoEditionIsEE
+    executeEeNfsAssertions
 }
 
 function testUpgradeNoCustomConfig()
@@ -70,21 +81,14 @@ function testCePhp5()
     executeCommonAssertions
 }
 
-function testEe()
-{
-    current_config_name="ee"
-    current_codebase="ee"
-    installEnvironment
-    executeCommonAssertions
-    executeEeNfsAssertions
-}
-
 function testEeNoNfs()
 {
     current_config_name="ee_no_nfs"
     current_codebase="ee"
     installEnvironment
     executeCommonAssertions
+    # There is no automatic switch to EE on project initialization for Windows hosts
+    assertMagentoEditionIsCE
 }
 
 ## Call and Run all Tests

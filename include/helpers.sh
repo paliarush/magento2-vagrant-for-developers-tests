@@ -21,37 +21,6 @@ function installEnvironmentWithUpgrade()
     upgradeVagrantProject
 }
 
-function executeCommonAssertions()
-{
-    # Make sure Magento was installed and is accessible
-    assertMagentoInstalledSuccessfully
-    assertMagentoAccessible
-    assertMagentoCliWorks
-
-    # Make sure Magento is still accessible after restarting services
-    assertMysqlRestartWorks
-    assertApacheRestartWorks
-    assertMagentoAccessible
-
-    # Make sure Magento reinstall script works
-    assertMagentoReinstallWorks
-    assertMagentoAccessible
-
-    assertEmailLoggingWorks
-
-    # Check if varnish can be enabled/disabled
-    assertVarnishEnablingWorks
-    assertVarnishDisablingWorks
-}
-
-function executeEeNfsAssertions()
-{
-    assertMagentoSwitchToEeWorks
-    assertMagentoAccessible
-    assertMagentoSwitchToCeWorks
-    assertMagentoAccessible
-}
-
 function downloadVagrantProject()
 {
     echo "## downloadVagrantProject"
