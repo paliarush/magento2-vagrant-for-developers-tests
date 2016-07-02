@@ -90,7 +90,7 @@ function assertMysqlRestartWorks()
 {
     echo "## assertMysqlRestartWorks"
     echo "## assertMysqlRestartWorks" >>${current_log_file_path}
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     cmd_output="$(vagrant ssh -c 'sudo service mysql restart' >>${current_log_file_path} 2>&1)"
     pattern="mysql start/running, process [0-9]+"
     output_log="$(tail -n2 ${current_log_file_path})"
@@ -101,7 +101,7 @@ function assertApacheRestartWorks()
 {
     echo "## assertApacheRestartWorks"
     echo "## assertApacheRestartWorks" >>${current_log_file_path}
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     cmd_output="$(vagrant ssh -c 'sudo service apache2 restart' >>${current_log_file_path} 2>&1)"
     pattern="\[ OK \]"
     output_log="$(tail -n2 ${current_log_file_path})"
@@ -112,7 +112,7 @@ function assertMagentoReinstallWorks()
 {
     echo "## assertMagentoReinstallWorks"
     echo "## assertMagentoReinstallWorks" >>${current_log_file_path}
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     bash m-reinstall >>${current_log_file_path} 2>&1
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
@@ -123,7 +123,7 @@ function assertMagentoSwitchToEeWorks()
 {
     echo "## assertMagentoSwitchToEeWorks"
     echo "## assertMagentoSwitchToEeWorks" >>${current_log_file_path}
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     bash m-switch-to-ee -f >>${current_log_file_path} 2>&1
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
@@ -134,7 +134,7 @@ function assertMagentoSwitchToCeWorks()
 {
     echo "## assertMagentoSwitchToCeWorks"
     echo "## assertMagentoSwitchToCeWorks" >>${current_log_file_path}
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     bash m-switch-to-ce -f >>${current_log_file_path} 2>&1
     pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
@@ -145,7 +145,7 @@ function assertMagentoCliWorks()
 {
     echo "## assertMagentoCliWorks"
     echo "## assertMagentoCliWorks" >>${current_log_file_path}
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     bash m-bin-magento list >>${current_log_file_path} 2>&1
     pattern="theme:uninstall"
     output_log="$(tail -n2 ${current_log_file_path})"
@@ -159,7 +159,7 @@ function assertEmailLoggingWorks()
     curl -X POST -F 'email=subscriber@example.com' "${current_magento_base_url}/newsletter/subscriber/new/"
 
     # Check if email is logged and identify its path
-    list_of_logged_emails="$(ls -l ${vagrant_dir}/log/email)"
+    list_of_logged_emails="$(ls -l "${vagrant_dir}/log/email")"
     pattern="([^ ]+Newsletter subscription success\.html)"
     if [[ ! ${list_of_logged_emails} =~ ${pattern} ]]; then
         fail "Email logging is broken (newsletter subscription email is not logged to 'vagrant-magento/log/email')"
@@ -178,7 +178,7 @@ function assertVarnishEnablingWorks()
     echo "## assertVarnishEnablingWorks"
     echo "## assertVarnishEnablingWorks" >>${current_log_file_path}
 
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     bash m-varnish enable >>${current_log_file_path} 2>&1
     assertVarnishEnabled
     assertMagentoFrontendAccessible
@@ -201,7 +201,7 @@ function assertVarnishDisablingWorks()
     echo "## assertVarnishDisablingWorks"
     echo "## assertVarnishDisablingWorks" >>${current_log_file_path}
 
-    cd ${vagrant_dir}
+    cd "${vagrant_dir}"
     bash m-varnish disable >>${current_log_file_path} 2>&1
 
     assertVarnishDisabled
@@ -218,4 +218,20 @@ function assertVarnishDisabled()
 
     listenerOnPort8080="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::8080[^0-9]'')"
     assertFalse 'Varnish shout not listen on port 8080' '[[ ${listenerOnPort8080} =~ varnishd ]]'
+}
+
+function assertNoErrorsInLogs()
+{
+    echo "## assertNoErrorsInLogs"
+    echo "## assertNoErrorsInLogs" >>${current_log_file_path}
+
+    grep_cannot="$(cat "${current_log_file_path}" | grep -i "cannot" | grep -iv "unload module vboxguest" | grep -iv "load Xdebug - it was already loaded" | grep -iv "Directory not empty")"
+    count_cannot="$(echo ${grep_cannot} | grep -ic "cannot")"
+    assertTrue "Errors found in log file:
+        ${grep_cannot}" '[[ ${count_cannot} -eq 0 ]]'
+
+    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs")"
+    count_error="$(echo ${grep_error} | grep -ic "error")"
+    assertTrue "Errors found in log file:
+        ${grep_error}" '[[ ${count_error} -eq 0 ]]'
 }

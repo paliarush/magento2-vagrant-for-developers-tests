@@ -21,9 +21,14 @@ function setUp()
 
 function tearDown()
 {
+    assertNoErrorsInLogs
     stashLogs
     stashMagentoCodebase
     clearTestTmp
+
+    # TODO: change globally when https://github.com/paliarush/magento2-vagrant-for-developers/issues/58 is unblocked
+    vagrant_dir="${tests_dir}/tmp/test/magento2-vagrant"
+
     echo "====TEST END====
     "
 }
@@ -85,6 +90,10 @@ function testEeNoNfs()
 {
     current_config_name="ee_no_nfs"
     current_codebase="ee"
+
+    # TODO: change globally when https://github.com/paliarush/magento2-vagrant-for-developers/issues/58 is unblocked
+    vagrant_dir="${tests_dir}/tmp/test/magento2 vagrant"
+
     installEnvironment
     executeCommonAssertions
     # There is no automatic switch to EE on project initialization for Windows hosts
