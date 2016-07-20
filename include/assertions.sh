@@ -4,6 +4,8 @@
 
 function executeCommonAssertions()
 {
+    assertPhpStormConfigured
+
     # Make sure Magento was installed and is accessible
     assertMagentoInstalledSuccessfully
     assertMagentoFrontendAccessible
@@ -234,4 +236,24 @@ function assertNoErrorsInLogs()
     count_error="$(echo ${grep_error} | grep -ic "error")"
     assertTrue "Errors found in log file:
         ${grep_error}" '[[ ${count_error} -eq 0 ]]'
+}
+
+function assertPhpStormConfigured()
+{
+    echo "## assertPhpStormConfigured"
+    echo "## assertPhpStormConfigured" >>${current_log_file_path}
+
+    deployment_config_path="${vagrant_dir}/.idea/deployment.xml"
+    misc_config_path="${vagrant_dir}/.idea/misc.xml"
+    assertTrue 'PhpStorm was not configured (deployment.xml is missing)' '[[ -f ${deployment_config_path} ]]'
+    assertTrue 'PhpStorm was not configured (misc.xml is missing)' '[[ -f ${misc_config_path} ]]'
+    assertTrue 'PhpStorm was not configured (php.xml is missing)' '[[ -f ${vagrant_dir}/.idea/php.xml ]]'
+    assertTrue 'PhpStorm was not configured (vcs.xml is missing)' '[[ -f ${vagrant_dir}/.idea/vcs.xml ]]'
+    assertTrue 'PhpStorm was not configured (webServers.xml is missing)' '[[ -f ${vagrant_dir}/.idea/webServers.xml ]]'
+
+    deployment_config_content="$(cat "${deployment_config_path}")"
+    assertTrue 'PhpStorm configured incorrectly. deployment.xml config is invalid' '[[ ${deployment_config_content} =~ \$PROJECT_DIR\$/magento2ce/app/etc ]]'
+
+    misc_config_content="$(cat "${misc_config_path}")"
+    assertTrue 'PhpStorm configured incorrectly. misc.xml config is invalid' '[[ ${misc_config_content} =~ urn:magento:module:Magento_Cron:etc/crontab.xsd ]]'
 }
