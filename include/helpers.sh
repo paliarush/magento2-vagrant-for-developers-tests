@@ -101,6 +101,15 @@ function unstashMagentoCodebase()
     fi
 }
 
+function hardReboot()
+{
+    echo "## hardReboot"
+    echo "## hardReboot" >>${current_log_file_path}
+    cd "${vagrant_dir}"
+    vagrant halt --force >>${current_log_file_path} 2>&1
+    vagrant up >>${current_log_file_path} 2>&1
+}
+
 function stashLogs()
 {
     log_file_path="${logs_dir}/${current_config_name}.log"

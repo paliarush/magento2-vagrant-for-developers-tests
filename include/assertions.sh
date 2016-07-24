@@ -59,7 +59,7 @@ function assertMagentoFrontendAccessible()
     cd ${tests_dir}
     magento_home_page_content="$(curl -sL ${current_magento_base_url})"
     pattern="Magento. All rights reserved."
-    assertTrue 'Magento was installed but main page is not accessible.' '[[ ${magento_home_page_content} =~ ${pattern} ]]'
+    assertTrue "Magento was installed but main page is not accessible. URL: '${current_magento_base_url}'" '[[ ${magento_home_page_content} =~ ${pattern} ]]'
 }
 
 function assertMagentoEditionIsCE()

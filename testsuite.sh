@@ -59,6 +59,9 @@ function testEe()
     executeCommonAssertions
     assertMagentoEditionIsEE
     executeEeNfsAssertions
+
+    hardReboot
+    executeCommonAssertions
 }
 
 function testUpgradeNoCustomConfig()
