@@ -2,3 +2,4 @@
 
 vagrant_project_repository_url="git@github.com:paliarush/magento2-vagrant-for-developers.git"
 vagrant_project_branch="2.0"
+delete_test_project_on_tear_down=1

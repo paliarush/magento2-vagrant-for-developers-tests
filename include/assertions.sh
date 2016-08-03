@@ -25,6 +25,10 @@ function executeCommonAssertions()
     # Check if varnish can be enabled/disabled
     assertVarnishEnablingWorks
     assertVarnishDisablingWorks
+
+    # Test search
+    createSimpleProduct
+    assertSearchWorks
 }
 
 function executeEeNfsAssertions()
@@ -215,6 +219,7 @@ function assertVarnishDisabled()
     echo "## assertVarnishDisabled"
     echo "## assertVarnishDisabled" >>${current_log_file_path}
 
+    cd "${vagrant_dir}"
     listenerOnPort80="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::80[^0-9]'')"
     assertTrue 'Apache is not listening on port 80' '[[ ${listenerOnPort80} =~ apache2 ]]'
 
@@ -232,7 +237,7 @@ function assertNoErrorsInLogs()
     assertTrue "Errors found in log file:
         ${grep_cannot}" '[[ ${count_cannot} -eq 0 ]]'
 
-    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs")"
+    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs" | grep -iv "shared folder errors")"
     count_error="$(echo ${grep_error} | grep -ic "error")"
     assertTrue "Errors found in log file:
         ${grep_error}" '[[ ${count_error} -eq 0 ]]'
@@ -256,4 +261,72 @@ function assertPhpStormConfigured()
 
     misc_config_content="$(cat "${misc_config_path}")"
     assertTrue 'PhpStorm configured incorrectly. misc.xml config is invalid' '[[ ${misc_config_content} =~ urn:magento:module:Magento_Cron:etc/crontab.xsd ]]'
+}
+
+function assertElasticSearchEnabled()
+{
+    echo "## assertElasticSearchEnabled"
+    echo "## assertElasticSearchEnabled" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    elasticSearchHealth="$(vagrant ssh -c 'curl -i http://127.0.0.1:9200/_cluster/health')"
+    assertTrue "ElasticSearch server is down:
+        ${elasticSearchHealth}" '[[ ${elasticSearchHealth} =~ \"status\":\"(green|yellow)\" ]]'
+
+    listOfIndexes="$(vagrant ssh -c 'curl -i http://127.0.0.1:9200/_cat/indices?v')"
+    assertTrue "Products index is not available in ElasticSearch:
+        ${listOfIndexes}" '[[ ${listOfIndexes} =~ magento2_product ]]'
+
+    assertSearchWorks
+}
+
+function assertElasticSearchDisabled()
+{
+    echo "## assertElasticSearchDisabled"
+    echo "## assertElasticSearchDisabled" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    elasticSearchHealth="$(vagrant ssh -c 'curl -i http://127.0.0.1:9200/_cluster/health')"
+    assertTrue "ElasticSearch server is down:
+        ${elasticSearchHealth}" '[[ ${elasticSearchHealth} =~ \"status\":\"(green|yellow)\" ]]'
+
+    listOfIndexes="$(vagrant ssh -c 'curl -i http://127.0.0.1:9200/_cat/indices?v')"
+    assertTrue "Products index must not be available in ElasticSearch:
+        ${listOfIndexes}" '[[ ! ${listOfIndexes} =~ magento2_product ]]'
+
+    assertSearchWorks
+}
+
+function assertSearchWorks()
+{
+    echo "## assertSearchWorks"
+    echo "## assertSearchWorks" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    productSearchResult="$(curl -sb -x GET "${current_magento_base_url}catalogsearch/result/?q=Test")"
+    # Search for test product price on the page
+    pattern="$22.00"
+    assertTrue "Catalog search does not work." '[[ ${productSearchResult} =~ ${pattern} ]]'
+}
+
+function assertElasticSearchEnablingWorks()
+{
+    echo "## assertElasticSearchEnablingWorks"
+    echo "## assertElasticSearchEnablingWorks" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    bash m-search-engine elasticsearch >>${current_log_file_path} 2>&1
+    refreshSearchIndexes
+    assertElasticSearchEnabled
+}
+
+function assertElasticSearchDisablingWorks()
+{
+    echo "## assertElasticSearchDisablingWorks"
+    echo "## assertElasticSearchDisablingWorks" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    bash m-search-engine mysql >>${current_log_file_path} 2>&1
+    refreshSearchIndexes
+    assertElasticSearchDisabled
 }

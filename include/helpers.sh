@@ -133,3 +133,35 @@ function clearTestTmp()
     fi
     rm -f ${current_log_file_path}
 }
+
+function createSimpleProduct()
+{
+    echo "## createSimpleProduct"
+    echo "## createSimpleProduct" >>${current_log_file_path}
+
+    echo "### 1" >>${current_log_file_path}
+    adminToken=$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
+        -H "Content-Type:application/json" \
+        -d '{"username":"admin", "password":"123123q"}')
+    echo "### 2" >>${current_log_file_path}
+
+    adminToken=$(echo ${adminToken} | sed -e 's/"//g')
+    echo "### 3" >>${current_log_file_path}
+
+    curl -sb -X POST "${current_magento_base_url}rest/V1/products" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${adminToken}" \
+        -d '{"product":{"sku":"testSimpleProduct", "name":"Test Simple Product", "attribute_set_id":4, "price":22, "status":1, "visibility":4, "type_id":"simple", "extension_attributes":{"stock_item":{"qty": 12345,"is_in_stock": true}}}}' \
+        >>${current_log_file_path} 2>&1
+    echo "### 4" >>${current_log_file_path}
+}
+
+function refreshSearchIndexes()
+{
+    echo "## deleteElasticSearchIndexes"
+    echo "## deleteElasticSearchIndexes" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    vagrant ssh -c 'curl -X DELETE -i http://127.0.0.1:9200/_all' >>${current_log_file_path} 2>&1
+    bash m-bin-magento indexer:reindex catalogsearch_fulltext >>${current_log_file_path} 2>&1
+}
