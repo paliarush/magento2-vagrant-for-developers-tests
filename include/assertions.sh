@@ -35,7 +35,7 @@ function executeCommonAssertions()
 
 function assertMagentoInstalledSuccessfully()
 {
-    echo "## assertMagentoInstalledSuccessfully"
+    echo "${blue}## assertMagentoInstalledSuccessfully${regular}"
     echo "## assertMagentoInstalledSuccessfully" >>${current_log_file_path}
     cd ${tests_dir}
     output_log="$(cat ${current_log_file_path})"
@@ -48,7 +48,7 @@ function assertMagentoInstalledSuccessfully()
 
 function assertMagentoFrontendAccessible()
 {
-    echo "## assertMagentoFrontendAccessible"
+    echo "${blue}## assertMagentoFrontendAccessible${regular}"
     echo "## assertMagentoFrontendAccessible" >>${current_log_file_path}
     cd ${tests_dir}
     magento_home_page_content="$(curl -sL ${current_magento_base_url})"
@@ -58,7 +58,7 @@ function assertMagentoFrontendAccessible()
 
 function assertMagentoEditionIsCE()
 {
-    echo "## assertMagentoEditionIsCE"
+    echo "${blue}## assertMagentoEditionIsCE${regular}"
     echo "## assertMagentoEditionIsCE" >>${current_log_file_path}
     cd ${tests_dir}
     admin_token="$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
@@ -71,7 +71,7 @@ function assertMagentoEditionIsCE()
 
 function assertMagentoEditionIsEE()
 {
-    echo "## assertMagentoEditionIsEE"
+    echo "${blue}## assertMagentoEditionIsEE${regular}"
     echo "## assertMagentoEditionIsEE" >>${current_log_file_path}
     cd ${tests_dir}
     admin_token="$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
@@ -84,7 +84,7 @@ function assertMagentoEditionIsEE()
 
 function assertMysqlRestartWorks()
 {
-    echo "## assertMysqlRestartWorks"
+    echo "${blue}## assertMysqlRestartWorks${regular}"
     echo "## assertMysqlRestartWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     cmd_output="$(vagrant ssh -c 'sudo service mysql restart' >>${current_log_file_path} 2>&1)"
@@ -95,7 +95,7 @@ function assertMysqlRestartWorks()
 
 function assertApacheRestartWorks()
 {
-    echo "## assertApacheRestartWorks"
+    echo "${blue}## assertApacheRestartWorks${regular}"
     echo "## assertApacheRestartWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     cmd_output="$(vagrant ssh -c 'sudo service apache2 restart' >>${current_log_file_path} 2>&1)"
@@ -106,7 +106,7 @@ function assertApacheRestartWorks()
 
 function assertMagentoReinstallWorks()
 {
-    echo "## assertMagentoReinstallWorks"
+    echo "${blue}## assertMagentoReinstallWorks${regular}"
     echo "## assertMagentoReinstallWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-reinstall >>${current_log_file_path} 2>&1
@@ -117,7 +117,7 @@ function assertMagentoReinstallWorks()
 
 function assertMagentoSwitchToEeWorks()
 {
-    echo "## assertMagentoSwitchToEeWorks"
+    echo "${blue}## assertMagentoSwitchToEeWorks${regular}"
     echo "## assertMagentoSwitchToEeWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-switch-to-ee -f >>${current_log_file_path} 2>&1
@@ -128,7 +128,7 @@ function assertMagentoSwitchToEeWorks()
 
 function assertMagentoSwitchToCeWorks()
 {
-    echo "## assertMagentoSwitchToCeWorks"
+    echo "${blue}## assertMagentoSwitchToCeWorks${regular}"
     echo "## assertMagentoSwitchToCeWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-switch-to-ce -f >>${current_log_file_path} 2>&1
@@ -139,18 +139,18 @@ function assertMagentoSwitchToCeWorks()
 
 function assertMagentoCliWorks()
 {
-    echo "## assertMagentoCliWorks"
+    echo "${blue}## assertMagentoCliWorks${regular}"
     echo "## assertMagentoCliWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-bin-magento list >>${current_log_file_path} 2>&1
     pattern="theme:uninstall"
     output_log="$(tail -n2 ${current_log_file_path})"
-    assertTrue 'Magento CLI does not work.' '[[ ${output_log} =~ ${pattern} ]]'
+    assertTrue "${red}Magento CLI does not work.${regular}" '[[ ${output_log} =~ ${pattern} ]]'
 }
 
 function assertEmailLoggingWorks()
 {
-    echo "## assertEmailLoggingWorks"
+    echo "${blue}## assertEmailLoggingWorks${regular}"
     echo "## assertEmailLoggingWorks" >>${current_log_file_path}
     curl -X POST -F 'email=subscriber@example.com' "${current_magento_base_url}/newsletter/subscriber/new/"
 
@@ -171,7 +171,7 @@ function assertEmailLoggingWorks()
 
 function assertVarnishEnablingWorks()
 {
-    echo "## assertVarnishEnablingWorks"
+    echo "${blue}## assertVarnishEnablingWorks${regular}"
     echo "## assertVarnishEnablingWorks" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -182,7 +182,7 @@ function assertVarnishEnablingWorks()
 
 function assertVarnishEnabled()
 {
-    echo "## assertVarnishEnabled"
+    echo "${blue}## assertVarnishEnabled${regular}"
     echo "## assertVarnishEnabled" >>${current_log_file_path}
 
     listenerOnPort80="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::80[^0-9]'')"
@@ -194,7 +194,7 @@ function assertVarnishEnabled()
 
 function assertVarnishDisablingWorks()
 {
-    echo "## assertVarnishDisablingWorks"
+    echo "${blue}## assertVarnishDisablingWorks${regular}"
     echo "## assertVarnishDisablingWorks" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -206,7 +206,7 @@ function assertVarnishDisablingWorks()
 
 function assertVarnishDisabled()
 {
-    echo "## assertVarnishDisabled"
+    echo "${blue}## assertVarnishDisabled${regular}"
     echo "## assertVarnishDisabled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -219,7 +219,7 @@ function assertVarnishDisabled()
 
 function assertNoErrorsInLogs()
 {
-    echo "## assertNoErrorsInLogs"
+    echo "${blue}## assertNoErrorsInLogs${regular}"
     echo "## assertNoErrorsInLogs" >>${current_log_file_path}
 
     grep_cannot="$(cat "${current_log_file_path}" | grep -i "cannot" | grep -iv "unload module vboxguest" | grep -iv "load Xdebug - it was already loaded" | grep -iv "Directory not empty")"
@@ -235,7 +235,7 @@ function assertNoErrorsInLogs()
 
 function assertPhpStormConfigured()
 {
-    echo "## assertPhpStormConfigured"
+    echo "${blue}## assertPhpStormConfigured${regular}"
     echo "## assertPhpStormConfigured" >>${current_log_file_path}
 
     deployment_config_path="${vagrant_dir}/.idea/deployment.xml"
@@ -255,7 +255,7 @@ function assertPhpStormConfigured()
 
 function assertElasticSearchEnabled()
 {
-    echo "## assertElasticSearchEnabled"
+    echo "${blue}## assertElasticSearchEnabled${regular}"
     echo "## assertElasticSearchEnabled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -272,7 +272,7 @@ function assertElasticSearchEnabled()
 
 function assertElasticSearchDisabled()
 {
-    echo "## assertElasticSearchDisabled"
+    echo "${blue}## assertElasticSearchDisabled${regular}"
     echo "## assertElasticSearchDisabled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -289,7 +289,7 @@ function assertElasticSearchDisabled()
 
 function assertSearchWorks()
 {
-    echo "## assertSearchWorks"
+    echo "${blue}## assertSearchWorks${regular}"
     echo "## assertSearchWorks" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -301,7 +301,7 @@ function assertSearchWorks()
 
 function assertElasticSearchEnablingWorks()
 {
-    echo "## assertElasticSearchEnablingWorks"
+    echo "${blue}## assertElasticSearchEnablingWorks${regular}"
     echo "## assertElasticSearchEnablingWorks" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -312,7 +312,7 @@ function assertElasticSearchEnablingWorks()
 
 function assertElasticSearchDisablingWorks()
 {
-    echo "## assertElasticSearchDisablingWorks"
+    echo "${blue}## assertElasticSearchDisablingWorks${regular}"
     echo "## assertElasticSearchDisablingWorks" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -323,7 +323,7 @@ function assertElasticSearchDisablingWorks()
 
 function assertCeSampleDataInstalled()
 {
-    echo "## assertCeSampleDataInstalled"
+    echo "${blue}## assertCeSampleDataInstalled${regular}"
     echo "## assertCeSampleDataInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -335,7 +335,7 @@ function assertCeSampleDataInstalled()
 
 function assertEeSampleDataInstalled()
 {
-    echo "## assertEeSampleDataInstalled"
+    echo "${blue}## assertEeSampleDataInstalled${regular}"
     echo "## assertEeSampleDataInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -347,7 +347,7 @@ function assertEeSampleDataInstalled()
 
 function assertEeSampleDataNotInstalled()
 {
-    echo "## assertEeSampleDataNotInstalled"
+    echo "${blue}## assertEeSampleDataNotInstalled${regular}"
     echo "## assertEeSampleDataNotInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
@@ -359,7 +359,7 @@ function assertEeSampleDataNotInstalled()
 
 function assertCeSampleDataNotInstalled()
 {
-    echo "## assertCeSampleDataNotInstalled"
+    echo "${blue}## assertCeSampleDataNotInstalled${regular}"
     echo "## assertCeSampleDataNotInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"

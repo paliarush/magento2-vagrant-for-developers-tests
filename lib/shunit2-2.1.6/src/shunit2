@@ -45,7 +45,7 @@ fi
 # constants
 #
 
-__SHUNIT_ASSERT_MSG_PREFIX='ASSERT:'
+__SHUNIT_ASSERT_MSG_PREFIX="${red}ASSERT:${regular}"
 __SHUNIT_MODE_SOURCED='sourced'
 __SHUNIT_MODE_STANDALONE='standalone'
 __SHUNIT_PARENT=${SHUNIT_PARENT:-$0}
@@ -346,7 +346,7 @@ assertTrue()
   if [ ${shunit_return} -eq ${SHUNIT_TRUE} ]; then
     _shunit_assertPass
   else
-    _shunit_assertFail "${shunit_message_}"
+    _shunit_assertFail "${red}${shunit_message_}${regular}"
   fi
 
   unset shunit_message_ shunit_condition_ shunit_match_
@@ -411,7 +411,7 @@ assertFalse()
   if [ ${shunit_return} -eq ${SHUNIT_TRUE} ]; then
     _shunit_assertPass
   else
-    _shunit_assertFail "${shunit_message_}"
+    _shunit_assertFail "${red}${shunit_message_}${regular}"
   fi
 
   unset shunit_message_ shunit_condition_ shunit_match_
@@ -444,7 +444,7 @@ fail()
     shift
   fi
 
-  _shunit_assertFail "${shunit_message_}"
+  _shunit_assertFail "${red}${shunit_message_}${regular}"
 
   unset shunit_message_
   return ${SHUNIT_FALSE}
@@ -476,7 +476,7 @@ failNotEquals()
   shunit_expected_=$1
   shunit_actual_=$2
 
-  _shunit_assertFail "${shunit_message_:+${shunit_message_} }expected:<${shunit_expected_}> but was:<${shunit_actual_}>"
+  _shunit_assertFail "${red}${shunit_message_:+${shunit_message_} }expected:<${shunit_expected_}> but was:<${shunit_actual_}>${regular}"
 
   unset shunit_message_ shunit_expected_ shunit_actual_
   return ${SHUNIT_FALSE}
@@ -506,7 +506,7 @@ failSame()
     shift
   fi
 
-  _shunit_assertFail "${shunit_message_:+${shunit_message_} }expected not same"
+  _shunit_assertFail "${red}${shunit_message_:+${shunit_message_} }expected not same${regular}"
 
   unset shunit_message_
   return ${SHUNIT_FALSE}
@@ -537,7 +537,7 @@ failNotSame()
     shunit_message_="${shunit_message_}$1"
     shift
   fi
-  failNotEquals "${shunit_message_}" "$1" "$2"
+  failNotEquals "${red}${shunit_message_}${regular}" "$1" "$2"
   shunit_return=$?
 
   unset shunit_message_
@@ -782,7 +782,7 @@ _shunit_execSuite()
     setUp
 
     # execute the test
-    echo "${_shunit_test_}"
+    echo "${bold}====${_shunit_test_}====${regular}"
     eval ${_shunit_test_}
 
     # execute the per-test tear-down function
@@ -829,11 +829,11 @@ _shunit_generateReport()
       && _shunit_skipped_="skipped=${__shunit_assertsSkipped}"
 
   if [ ${_shunit_ok_} -eq ${SHUNIT_TRUE} ]; then
-    _shunit_msg_='OK'
+    _shunit_msg_="${green}${bold}OK${regular}"
     [ -n "${_shunit_skipped_}" ] \
         && _shunit_msg_="${_shunit_msg_} (${_shunit_skipped_})"
   else
-    _shunit_msg_="FAILED (${_shunit_failures_}"
+    _shunit_msg_="${red}${bold}FAILED (${_shunit_failures_}${regular}"
     [ -n "${_shunit_skipped_}" ] \
         && _shunit_msg_="${_shunit_msg_},${_shunit_skipped_}"
     _shunit_msg_="${_shunit_msg_})"

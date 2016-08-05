@@ -9,3 +9,11 @@ logs_dir="${tests_dir}/logs"
 current_config_name=""
 current_codebase=""
 current_magento_base_url=""
+
+# Colors for CLI output
+bold=$(tput bold)
+green=$(tput setaf 2)
+blue=$(tput setaf 4)
+red=$(tput setaf 1)
+grey=$(tput setaf 7)
+regular=$(tput sgr0)

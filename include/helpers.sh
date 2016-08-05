@@ -23,7 +23,7 @@ function installEnvironmentWithUpgrade()
 
 function downloadVagrantProject()
 {
-    echo "## downloadVagrantProject"
+    echo "${grey}## downloadVagrantProject${regular}"
     echo "## downloadVagrantProject" >>${current_log_file_path}
     cd ${tests_dir}
     git clone ${vagrant_project_repository_url} "${vagrant_dir}" >>${current_log_file_path} 2>&1
@@ -33,7 +33,7 @@ function downloadVagrantProject()
 
 function downloadBaseVersionOfVagrantProject()
 {
-    echo "## downloadBaseVersionOfVagrantProject"
+    echo "${grey}## downloadBaseVersionOfVagrantProject${regular}"
     echo "## downloadBaseVersionOfVagrantProject" >>${current_log_file_path}
     cd ${tests_dir}
     git clone git@github.com:paliarush/magento2-vagrant-for-developers.git "${vagrant_dir}" >>${current_log_file_path} 2>&1
@@ -46,7 +46,7 @@ function downloadBaseVersionOfVagrantProject()
 
 function upgradeVagrantProject()
 {
-    echo "## upgradeVagrantProject"
+    echo "${grey}## upgradeVagrantProject${regular}"
     echo "## upgradeVagrantProject" >>${current_log_file_path}
     # Reset changes done to box version requirements
     git checkout "${vagrant_dir}/Vagrantfile" >>${current_log_file_path} 2>&1
@@ -59,7 +59,7 @@ function upgradeVagrantProject()
 
 function configureVagrantProject()
 {
-    echo "## configureVagrantProject"
+    echo "${grey}## configureVagrantProject${regular}"
     echo "## configureVagrantProject" >>${current_log_file_path}
     current_config_path="${test_config_dir}/${current_config_name}_config.yaml"
     if [ -f ${current_config_path} ]; then
@@ -69,7 +69,7 @@ function configureVagrantProject()
 
 function deployVagrantProject()
 {
-    echo "## deployVagrantProject"
+    echo "${grey}## deployVagrantProject${regular}"
     echo "## deployVagrantProject" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash init_project.sh >>${current_log_file_path} 2>&1
@@ -77,7 +77,7 @@ function deployVagrantProject()
 
 function stashMagentoCodebase()
 {
-    echo "## stashMagentoCodebase"
+    echo "${grey}## stashMagentoCodebase${regular}"
     echo "## stashMagentoCodebase" >>${current_log_file_path}
     if [ -d "${vagrant_dir}/magento2ce" ]; then
         magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}"
@@ -93,7 +93,7 @@ function stashMagentoCodebase()
 
 function unstashMagentoCodebase()
 {
-    echo "## unstashMagentoCodebase"
+    echo "${grey}## unstashMagentoCodebase${regular}"
     echo "## unstashMagentoCodebase" >>${current_log_file_path}
     magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}/magento2ce"
     if [ -d ${magento_stash_dir} ]; then
@@ -103,7 +103,7 @@ function unstashMagentoCodebase()
 
 function hardReboot()
 {
-    echo "## hardReboot"
+    echo "${grey}## hardReboot${regular}"
     echo "## hardReboot" >>${current_log_file_path}
     cd "${vagrant_dir}"
     vagrant halt --force >>${current_log_file_path} 2>&1
@@ -123,7 +123,7 @@ function clearLogs()
 
 function clearTestTmp()
 {
-    echo "## clearTestTmp"
+    echo "${grey}## clearTestTmp${regular}"
     echo "## clearTestTmp" >>${current_log_file_path}
     if [ -e "${vagrant_dir}" ]; then
         cd "${vagrant_dir}"
@@ -136,7 +136,7 @@ function clearTestTmp()
 
 function createSimpleProduct()
 {
-    echo "## createSimpleProduct"
+    echo "${grey}## createSimpleProduct${regular}"
     echo "## createSimpleProduct" >>${current_log_file_path}
 
     adminToken=$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
@@ -153,7 +153,7 @@ function createSimpleProduct()
 
 function refreshSearchIndexes()
 {
-    echo "## deleteElasticSearchIndexes"
+    echo "${grey}## deleteElasticSearchIndexes${regular}"
     echo "## deleteElasticSearchIndexes" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
