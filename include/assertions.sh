@@ -31,16 +31,6 @@ function executeCommonAssertions()
     assertSearchWorks
 }
 
-function executeEeNfsAssertions()
-{
-    assertMagentoSwitchToEeWorks
-    assertMagentoFrontendAccessible
-    assertMagentoEditionIsEE
-    assertMagentoSwitchToCeWorks
-    assertMagentoFrontendAccessible
-    assertMagentoEditionIsCE
-}
-
 ## Assertions
 
 function assertMagentoInstalledSuccessfully()
@@ -329,4 +319,51 @@ function assertElasticSearchDisablingWorks()
     bash m-search-engine mysql >>${current_log_file_path} 2>&1
     refreshSearchIndexes
     assertElasticSearchDisabled
+}
+
+function assertCeSampleDataInstalled()
+{
+    echo "## assertCeSampleDataInstalled"
+    echo "## assertCeSampleDataInstalled" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}wayfarer-messenger-bag.html")"
+    # Search for product SKU on the page
+    pattern="24-MB05"
+    assertTrue "Sample data is not installed." '[[ ${productDetailsPage} =~ ${pattern} ]]'
+}
+
+function assertEeSampleDataInstalled()
+{
+    echo "## assertEeSampleDataInstalled"
+    echo "## assertEeSampleDataInstalled" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}joust-duffle-bag.html")"
+    # Search for Related Products on the page, which are populated by EE sample data
+    pattern="Affirm Water Bottle"
+    assertTrue "EE sample data not installed." '[[ ${productDetailsPage} =~ ${pattern} ]]'
+}
+
+function assertEeSampleDataNotInstalled()
+{
+    echo "## assertEeSampleDataNotInstalled"
+    echo "## assertEeSampleDataNotInstalled" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}joust-duffle-bag.html")"
+    # Search for Related Products on the page, which are populated by EE sample data
+    pattern="Affirm Water Bottle"
+    assertTrue "EE sample data is installed, when should not be." '[[ ! ${productDetailsPage} =~ ${pattern} ]]'
+}
+
+function assertCeSampleDataNotInstalled()
+{
+    echo "## assertCeSampleDataNotInstalled"
+    echo "## assertCeSampleDataNotInstalled" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}wayfarer-messenger-bag.html")"
+    pattern="The page you requested was not found"
+    assertTrue "Sample data is installed, when should not be." '[[ ${productDetailsPage} =~ ${pattern} ]]'
 }

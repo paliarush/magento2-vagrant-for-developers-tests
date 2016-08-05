@@ -52,22 +52,35 @@ function testNoCustomConfig()
     assertVarnishDisabled
     executeCommonAssertions
     assertMagentoEditionIsCE
+    assertCeSampleDataNotInstalled
 }
 
-function testEe()
+function testEeWithElasticSearchAndSampleData()
 {
-    current_config_name="ee_with_elastic_search"
-    current_codebase="ee"
+    current_config_name="ee_with_elastic_search_and_sample_data"
+    current_codebase="ee_with_sample_data"
 
     installEnvironment
     executeCommonAssertions
+    assertCeSampleDataInstalled
+    assertEeSampleDataInstalled
+    assertMagentoEditionIsEE
 
     assertElasticSearchEnabled
     assertElasticSearchDisablingWorks
     assertElasticSearchEnablingWorks
 
+    assertMagentoSwitchToCeWorks
+    assertMagentoFrontendAccessible
+    assertMagentoEditionIsCE
+    assertCeSampleDataInstalled
+    assertEeSampleDataNotInstalled
+
+    assertMagentoSwitchToEeWorks
+    assertMagentoFrontendAccessible
     assertMagentoEditionIsEE
-    executeEeNfsAssertions
+    assertCeSampleDataInstalled
+    assertEeSampleDataInstalled
 
     hardReboot
     executeCommonAssertions
@@ -79,6 +92,7 @@ function testUpgradeNoCustomConfig()
     current_codebase="ce"
     installEnvironmentWithUpgrade
     executeCommonAssertions
+    assertCeSampleDataNotInstalled
 }
 
 function testCePreferSourceVarnishEnabled()
@@ -88,14 +102,17 @@ function testCePreferSourceVarnishEnabled()
     installEnvironment
     assertVarnishEnabled
     executeCommonAssertions
+    assertCeSampleDataNotInstalled
 }
 
-function testCePhp5()
+function testCePhp5WithSampleData()
 {
-    current_config_name="ce_php5"
-    current_codebase="ce"
+    current_config_name="ce_php5_sample_data"
+    current_codebase="ce_with_sample_data"
     installEnvironment
     executeCommonAssertions
+    assertCeSampleDataInstalled
+    assertEeSampleDataNotInstalled
 }
 
 function testEeNoNfs()
@@ -108,6 +125,7 @@ function testEeNoNfs()
 
     installEnvironment
     executeCommonAssertions
+    assertCeSampleDataNotInstalled
     assertElasticSearchDisabled
     # There is no automatic switch to EE on project initialization for Windows hosts
     assertMagentoEditionIsCE
