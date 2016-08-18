@@ -26,9 +26,15 @@ function downloadVagrantProject()
     echo "${grey}## downloadVagrantProject${regular}"
     echo "## downloadVagrantProject" >>${current_log_file_path}
     cd ${tests_dir}
-    git clone ${vagrant_project_repository_url} "${vagrant_dir}" >>${current_log_file_path} 2>&1
-    cd "${vagrant_dir}"
-    git checkout ${vagrant_project_branch} >>${current_log_file_path} 2>&1
+    if [[ ! -z "${vagrant_project_local_path}" ]]; then
+        echo "${grey}## copy vagrant project from local path${regular}"
+        echo "## copy vagrant project from local path" >>${current_log_file_path}
+        cp -r "${vagrant_project_local_path}" "${vagrant_dir}"
+    else
+        git clone ${vagrant_project_repository_url} "${vagrant_dir}" >>${current_log_file_path} 2>&1
+        cd "${vagrant_dir}"
+        git checkout ${vagrant_project_branch} >>${current_log_file_path} 2>&1
+    fi
 }
 
 function downloadBaseVersionOfVagrantProject()

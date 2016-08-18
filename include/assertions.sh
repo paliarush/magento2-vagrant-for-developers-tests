@@ -39,7 +39,7 @@ function assertMagentoInstalledSuccessfully()
     echo "## assertMagentoInstalledSuccessfully" >>${current_log_file_path}
     cd ${tests_dir}
     output_log="$(cat ${current_log_file_path})"
-    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+).*"
     if [[ ! ${output_log} =~ ${pattern} ]]; then
         fail "Magento was not installed successfully (Frontend URL is not available in the init script output)"
     fi
@@ -110,7 +110,7 @@ function assertMagentoReinstallWorks()
     echo "## assertMagentoReinstallWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-reinstall >>${current_log_file_path} 2>&1
-    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
     assertTrue 'Magento reinstallation failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
 }
@@ -121,7 +121,7 @@ function assertMagentoSwitchToEeWorks()
     echo "## assertMagentoSwitchToEeWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-switch-to-ee -f >>${current_log_file_path} 2>&1
-    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
     assertTrue 'Magento switch to EE failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
 }
@@ -132,7 +132,7 @@ function assertMagentoSwitchToCeWorks()
     echo "## assertMagentoSwitchToCeWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     bash m-switch-to-ce -f >>${current_log_file_path} 2>&1
-    pattern="Access storefront at ([a-zA-Z0-9/:\.]+).*"
+    pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+).*"
     output_log="$(tail -n5 ${current_log_file_path})"
     assertTrue 'Magento switch to CE failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
 }
@@ -231,6 +231,11 @@ function assertNoErrorsInLogs()
     count_error="$(echo ${grep_error} | grep -ic "error")"
     assertTrue "Errors found in log file:
         ${grep_error}" '[[ ${count_error} -eq 0 ]]'
+
+    grep_exception="$(cat "${current_log_file_path}" | grep -i "exception")"
+    count_exception="$(echo ${grep_error} | grep -ic "exception")"
+    assertTrue "Errors found in log file:
+        ${grep_exception}" '[[ ${count_exception} -eq 0 ]]'
 }
 
 function assertPhpStormConfigured()
