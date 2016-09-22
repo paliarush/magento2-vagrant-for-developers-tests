@@ -111,7 +111,12 @@ function assertMagentoReinstallWorks()
     cd "${vagrant_dir}"
     bash m-reinstall >>${current_log_file_path} 2>&1
     pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+).*"
-    output_log="$(tail -n5 ${current_log_file_path})"
+    if [[ ${debug_vagrant_project} -eq 1 ]]; then
+        tail_number=300
+    else
+        tail_number=5
+    fi
+    output_log="$(tail -n${tail_number} ${current_log_file_path})"
     assertTrue 'Magento reinstallation failed (Frontend URL is not available in the output)' '[[ ${output_log} =~ ${pattern} ]]'
 }
 
@@ -144,7 +149,12 @@ function assertMagentoCliWorks()
     cd "${vagrant_dir}"
     bash m-bin-magento list >>${current_log_file_path} 2>&1
     pattern="theme:uninstall"
-    output_log="$(tail -n2 ${current_log_file_path})"
+    if [[ ${debug_vagrant_project} -eq 1 ]]; then
+        tail_number=55
+    else
+        tail_number=2
+    fi
+    output_log="$(tail -n${tail_number} ${current_log_file_path})"
     assertTrue "${red}Magento CLI does not work.${regular}" '[[ ${output_log} =~ ${pattern} ]]'
 }
 
@@ -227,7 +237,7 @@ function assertNoErrorsInLogs()
     assertTrue "Errors found in log file:
         ${grep_cannot}" '[[ ${count_cannot} -eq 0 ]]'
 
-    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs" | grep -iv "shared folder errors")"
+    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs" | grep -iv "shared folder errors" | grep -iv "\+\+ logError" | grep -iv "\+\+ outputErrorsOnly" | grep -iv "\+\+ errors=" | grep -iv "\+\+ which bash")"
     count_error="$(echo ${grep_error} | grep -ic "error")"
     assertTrue "Errors found in log file:
         ${grep_error}" '[[ ${count_error} -eq 0 ]]'

@@ -14,6 +14,11 @@ function oneTimeSetUp
     clearLogs
 }
 
+function setUp()
+{
+    debug_vagrant_project=0
+}
+
 function tearDown()
 {
     assertNoErrorsInLogs
@@ -91,6 +96,7 @@ function testCePreferSourceVarnishEnabled()
 {
     current_config_name="ce_prefer_source_varnish_enabled"
     current_codebase="ce"
+    debug_vagrant_project=1
     installEnvironment
     assertVarnishEnabled
     executeCommonAssertions
