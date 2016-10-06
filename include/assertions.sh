@@ -29,6 +29,8 @@ function executeCommonAssertions()
     # Test search
     createSimpleProduct
     assertSearchWorks
+
+    assertTestsConfigured
 }
 
 ## Assertions
@@ -39,7 +41,7 @@ function assertMagentoInstalledSuccessfully()
     echo "## assertMagentoInstalledSuccessfully" >>${current_log_file_path}
     cd ${tests_dir}
     output_log="$(cat ${current_log_file_path})"
-    pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+).*"
+    pattern="Access storefront at .*(http\://magento2\.vagrant[0-9/:\.]+)/.*"
     if [[ ! ${output_log} =~ ${pattern} ]]; then
         fail "Magento was not installed successfully (Frontend URL is not available in the init script output)"
     fi
@@ -61,10 +63,10 @@ function assertMagentoEditionIsCE()
     echo "${blue}## assertMagentoEditionIsCE${regular}"
     echo "## assertMagentoEditionIsCE" >>${current_log_file_path}
     cd ${tests_dir}
-    admin_token="$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
+    admin_token="$(curl -sb -X POST "${current_magento_base_url}/rest/V1/integration/admin/token" \
         -H "Content-Type:application/json" \
         -d '{"username":"admin", "password":"123123q"}')"
-    rest_schema="$(curl -sb -x GET "${current_magento_base_url}rest/default/schema" -H "Authorization:Bearer ${admin_token}")"
+    rest_schema="$(curl -sb -x GET "${current_magento_base_url}/rest/default/schema" -H "Authorization:Bearer ${admin_token}")"
     pattern='"title":"Magento Community"'
     assertTrue 'Current edition is not Community.' '[[ ${rest_schema} =~ ${pattern} ]]'
 }
@@ -74,10 +76,10 @@ function assertMagentoEditionIsEE()
     echo "${blue}## assertMagentoEditionIsEE${regular}"
     echo "## assertMagentoEditionIsEE" >>${current_log_file_path}
     cd ${tests_dir}
-    admin_token="$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
+    admin_token="$(curl -sb -X POST "${current_magento_base_url}/rest/V1/integration/admin/token" \
         -H "Content-Type:application/json" \
         -d '{"username":"admin", "password":"123123q"}')"
-    rest_schema="$(curl -sb -x GET "${current_magento_base_url}rest/default/schema" -H "Authorization:Bearer ${admin_token}")"
+    rest_schema="$(curl -sb -x GET "${current_magento_base_url}/rest/default/schema" -H "Authorization:Bearer ${admin_token}")"
     pattern='"title":"Magento Enterprise"'
     assertTrue 'Current edition is not Enterprise.' '[[ ${rest_schema} =~ ${pattern} ]]'
 }
@@ -237,7 +239,7 @@ function assertNoErrorsInLogs()
     assertTrue "Errors found in log file:
         ${grep_cannot}" '[[ ${count_cannot} -eq 0 ]]'
 
-    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs" | grep -iv "shared folder errors" | grep -iv "\+\+ logError" | grep -iv "\+\+ outputErrorsOnly" | grep -iv "\+\+ errors=" | grep -iv "\+\+ which bash")"
+    grep_error="$(cat "${current_log_file_path}" | grep -i "error" | grep -iv "errors = Off|display" | grep -iv "error_reporting = E_ALL" | grep -iv "assertNoErrorsInLogs" | grep -iv "shared folder errors" | grep -iv "\+\+ logError" | grep -iv "\+\+ outputErrorsOnly" | grep -iv "\+\+ errors=" | grep -iv "\+\+ which bash" | grep -iv "make sure there are no errors")"
     count_error="$(echo ${grep_error} | grep -ic "error")"
     assertTrue "Errors found in log file:
         ${grep_error}" '[[ ${count_error} -eq 0 ]]'
@@ -308,7 +310,7 @@ function assertSearchWorks()
     echo "## assertSearchWorks" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
-    productSearchResult="$(curl -sb -x GET "${current_magento_base_url}catalogsearch/result/?q=Test")"
+    productSearchResult="$(curl -sb -x GET "${current_magento_base_url}/catalogsearch/result/?q=Test")"
     # Search for test product price on the page
     pattern="$22.00"
     assertTrue "Catalog search does not work." '[[ ${productSearchResult} =~ ${pattern} ]]'
@@ -342,7 +344,7 @@ function assertCeSampleDataInstalled()
     echo "## assertCeSampleDataInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
-    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}wayfarer-messenger-bag.html")"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}/wayfarer-messenger-bag.html")"
     # Search for product SKU on the page
     pattern="24-MB05"
     assertTrue "Sample data is not installed." '[[ ${productDetailsPage} =~ ${pattern} ]]'
@@ -354,7 +356,7 @@ function assertEeSampleDataInstalled()
     echo "## assertEeSampleDataInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
-    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}joust-duffle-bag.html")"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}/joust-duffle-bag.html")"
     # Search for Related Products on the page, which are populated by EE sample data
     pattern="Affirm Water Bottle"
     assertTrue "EE sample data not installed." '[[ ${productDetailsPage} =~ ${pattern} ]]'
@@ -366,7 +368,7 @@ function assertEeSampleDataNotInstalled()
     echo "## assertEeSampleDataNotInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
-    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}joust-duffle-bag.html")"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}/joust-duffle-bag.html")"
     # Search for Related Products on the page, which are populated by EE sample data
     pattern="Affirm Water Bottle"
     assertTrue "EE sample data is installed, when should not be." '[[ ! ${productDetailsPage} =~ ${pattern} ]]'
@@ -378,7 +380,53 @@ function assertCeSampleDataNotInstalled()
     echo "## assertCeSampleDataNotInstalled" >>${current_log_file_path}
 
     cd "${vagrant_dir}"
-    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}wayfarer-messenger-bag.html")"
+    productDetailsPage="$(curl -sb -x GET "${current_magento_base_url}/wayfarer-messenger-bag.html")"
     pattern="The page you requested was not found"
     assertTrue "Sample data is installed, when should not be." '[[ ${productDetailsPage} =~ ${pattern} ]]'
+}
+
+function assertTestsConfigured()
+{
+    echo "${blue}## assertTestsConfigured${regular}"
+    echo "## assertTestsConfigured" >>${current_log_file_path}
+
+    # Unit tests
+    unit_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/unit/phpunit.xml"
+    assertTrue "Unit tests are not configured ('${unit_tests_config_path}' is missing)" '[[ -f ${unit_tests_config_path} ]]'
+    
+    # Integration tests
+    integration_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/integration/phpunit.xml"
+    assertTrue "Integration tests are not configured ('${integration_tests_config_path}' is missing)" '[[ -f ${integration_tests_config_path} ]]'
+    integration_tests_mysql_config_path="${vagrant_dir}/magento2ce/dev/tests/integration/etc/install-config-mysql.php"
+    assertTrue "Integration tests MySQL config ('${integration_tests_mysql_config_path}') is missing" '[[ -f ${integration_tests_mysql_config_path} ]]'
+    integration_tests_mysql_config_content="$(cat "${integration_tests_mysql_config_path}")"
+    pattern="amqp-password"
+    assertTrue "Contents of '${integration_tests_mysql_config_path}' seems to be invalid${functional_tests_config_content} =~ ${pattern}" '[[ ${integration_tests_mysql_config_content} =~ ${pattern} ]]'
+    
+    # REST Web API tests
+    rest_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/api-functional/rest.xml"
+    assertTrue "REST tests are not configured ('${rest_tests_config_path}' is missing)" '[[ -f ${rest_tests_config_path} ]]'
+    rest_tests_config_content="$(cat "${rest_tests_config_path}")"
+    pattern="${current_magento_base_url}"
+    assertTrue "Contents of '${rest_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${rest_tests_config_content} =~ ${pattern} ]]'
+    
+    # SOAP Web API tests
+    soap_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/api-functional/soap.xml"
+    assertTrue "SOAP tests are not configured ('${soap_tests_config_path}' is missing)" '[[ -f ${soap_tests_config_path} ]]'
+    soap_tests_config_content="$(cat "${soap_tests_config_path}")"
+    pattern="${current_magento_base_url}"
+    assertTrue "Contents of '${soap_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${soap_tests_config_content} =~ ${pattern} ]]'
+    
+    # Functional tests
+    functional_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/functional/phpunit.xml"
+    assertTrue "Functional tests are not configured ('${functional_tests_config_path}' is missing)" '[[ -f ${functional_tests_config_path} ]]'
+    functional_tests_config_content="$(cat "${functional_tests_config_path}")"
+    pattern="${current_magento_base_url}"
+    assertTrue "Contents of '${functional_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${functional_tests_config_content} =~ ${pattern} ]]'
+
+    functional_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/functional/etc/config.xml"
+    assertTrue "Functional tests are not configured ('${functional_tests_config_path}' is missing)" '[[ -f ${functional_tests_config_path} ]]'
+    functional_tests_config_content="$(cat "${functional_tests_config_path}")"
+    pattern="${current_magento_base_url}"
+    assertTrue "Contents of '${functional_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${functional_tests_config_content} =~ ${pattern} ]]'
 }

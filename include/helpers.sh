@@ -93,7 +93,14 @@ function stashMagentoCodebase()
         rm -rf ${magento_stash_dir}/magento2ce/var/*
         rm -rf ${magento_stash_dir}/magento2ce/vendor/*
         rm -rf ${magento_stash_dir}/magento2ce/pub/static/*
-        rm -rf ${magento_stash_dir}/magento2ce/app/etc/config.php
+        rm -f ${magento_stash_dir}/magento2ce/app/etc/config.php
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/api-functional/soap.xml
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/api-functional/rest.xml
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/functional/phpunit.xml
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/functional/etc/config.xml
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/integration/phpunit.xml
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/integration/etc/install-config-mysql.php
+        rm -f ${magento_stash_dir}/magento2ce/dev/tests/unit/phpunit.xml
     fi
 }
 
@@ -145,12 +152,12 @@ function createSimpleProduct()
     echo "${grey}## createSimpleProduct${regular}"
     echo "## createSimpleProduct" >>${current_log_file_path}
 
-    adminToken=$(curl -sb -X POST "${current_magento_base_url}rest/V1/integration/admin/token" \
+    adminToken=$(curl -sb -X POST "${current_magento_base_url}/rest/V1/integration/admin/token" \
         -H "Content-Type:application/json" \
         -d '{"username":"admin", "password":"123123q"}')
     adminToken=$(echo ${adminToken} | sed -e 's/"//g')
 
-    curl -sb -X POST "${current_magento_base_url}rest/V1/products" \
+    curl -sb -X POST "${current_magento_base_url}/rest/V1/products" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${adminToken}" \
         -d '{"product":{"sku":"testSimpleProduct", "name":"Test Simple Product", "attribute_set_id":4, "price":22, "status":1, "visibility":4, "type_id":"simple", "extension_attributes":{"stock_item":{"qty": 12345,"is_in_stock": true}}}}' \
