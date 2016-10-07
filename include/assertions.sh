@@ -29,8 +29,6 @@ function executeCommonAssertions()
     # Test search
     createSimpleProduct
     assertSearchWorks
-
-    assertTestsConfigured
 }
 
 ## Assertions

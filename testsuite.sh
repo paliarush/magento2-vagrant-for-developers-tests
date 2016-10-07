@@ -50,6 +50,7 @@ function testNoCustomConfig()
     executeCommonAssertions
     assertMagentoEditionIsCE
     assertCeSampleDataNotInstalled
+    assertTestsConfigured
 }
 
 function testEeWithElasticSearchAndSampleData()
@@ -81,6 +82,7 @@ function testEeWithElasticSearchAndSampleData()
 
     hardReboot
     executeCommonAssertions
+    assertTestsConfigured
 }
 
 function testUpgradeNoCustomConfig()
@@ -101,6 +103,7 @@ function testCePreferSourceVarnishEnabled()
     assertVarnishEnabled
     executeCommonAssertions
     assertCeSampleDataNotInstalled
+    assertTestsConfigured
 }
 
 function testCePhp5WithSampleData()
@@ -111,6 +114,7 @@ function testCePhp5WithSampleData()
     executeCommonAssertions
     assertCeSampleDataInstalled
     assertEeSampleDataNotInstalled
+    assertTestsConfigured
 }
 
 function testEeNoNfs()
@@ -127,6 +131,7 @@ function testEeNoNfs()
     assertElasticSearchDisabled
     # There is no automatic switch to EE on project initialization for Windows hosts
     assertMagentoEditionIsCE
+    assertTestsConfigured
 }
 
 ## Call and Run all Tests
