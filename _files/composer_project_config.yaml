@@ -1,0 +1,58 @@
+# Possible values: git, composer [To apply changes: init_project.sh -fc]
+checkout_source_from: "composer"
+
+composer_project:
+  # [To apply changes: init_project.sh -fc]
+  name: "magento/project-community-edition"
+  # Make sure to specify valid keys for this repository in etc/composer/auth.json
+  url: "https://repo.magento.com"
+
+repository_url:
+  # [To apply changes: init_project.sh -fc]
+  # git@github.com:magento/magento2ce.git OR custom one
+  ce: "git@github.com:magento/magento2.git"
+  # git@github.com:magento/magento2ee.git OR custom one
+  ee: ""
+  # can be replaced with custom repository
+  ce_sample_data: "git@github.com:magento/magento2-sample-data.git"
+  # git@github.com:magento/magento2-sample-data-ee.git OR custom one
+  ee_sample_data: ""
+
+guest:
+  # [To apply changes: init_project.sh -f]
+  # NFS will be used for folder synchronization on *nix and OSX hosts by default.
+  use_nfs: 1
+  # Default is 2Gb, around 3Gb is necessary to run functional tests.
+  # [To apply changes: vagrant reload]
+  memory: 2048
+  ip_address: "192.168.10.2"
+  forwarded_ssh_port: 3000
+
+environment:
+  # [To apply changes: vagrant reload]
+  # If set to 0, PHP 5 will be installed.
+  use_php7: 1
+  composer_prefer_source: 0
+  # [To apply changes: m-reinstall]
+  use_varnish: 0
+  # Possible values: mysql, elasticsearch
+  # [To apply changes: m-reinstall]
+  search_engine: "mysql"
+
+magento:
+  # [To apply changes: m-switch-to-ce -f OR m-switch-to-ee -f]
+  install_sample_data: 0
+  # [To apply changes: init_project.sh -f]
+  host_name: "magento2.vagrant2"
+  # [To apply changes: m-reinstall]
+  admin_frontname: "admin"
+  language: "en_US"
+  timezone: "America/Chicago"
+  currency: "USD"
+  admin_user: "admin"
+  admin_password: "123123q"
+
+debug:
+  # Enable detailed output from all scripts provided by current vagrant project
+  # [Changes applied immediately]
+  vagrant_project: 0

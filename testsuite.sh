@@ -53,6 +53,18 @@ function testNoCustomConfig()
     assertTestsConfigured
 }
 
+function testComposerProjectConfig()
+{
+    current_config_name="composer_project"
+    current_codebase="ce_from_composer"
+    installEnvironment
+    assertVarnishDisabled
+    executeCommonAssertions
+    assertMagentoEditionIsCE
+    assertCeSampleDataNotInstalled
+    assertTestsConfigured
+}
+
 function testEeWithElasticSearchAndSampleData()
 {
     current_config_name="ee_with_elastic_search_and_sample_data"

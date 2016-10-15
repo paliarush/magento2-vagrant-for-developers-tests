@@ -71,6 +71,7 @@ function configureVagrantProject()
     if [ -f ${current_config_path} ]; then
         cp ${current_config_path} "${vagrant_dir}/etc/config.yaml"
     fi
+    cp ${tests_dir}/include/auth.json ${vagrant_dir}/etc/composer/auth.json
 }
 
 function deployVagrantProject()
