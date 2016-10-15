@@ -406,14 +406,14 @@ function assertTestsConfigured()
     assertTrue "REST tests are not configured ('${rest_tests_config_path}' is missing)" '[[ -f ${rest_tests_config_path} ]]'
     rest_tests_config_content="$(cat "${rest_tests_config_path}")"
     pattern="${current_magento_base_url}"
-    assertTrue "Contents of '${rest_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${rest_tests_config_content} =~ ${pattern} ]]'
+    assertTrue "Contents of '${rest_tests_config_path}' seems to be invalid ${rest_tests_config_content} =~ ${pattern}" '[[ ${rest_tests_config_content} =~ ${pattern} ]]'
     
     # SOAP Web API tests
     soap_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/api-functional/soap.xml"
     assertTrue "SOAP tests are not configured ('${soap_tests_config_path}' is missing)" '[[ -f ${soap_tests_config_path} ]]'
     soap_tests_config_content="$(cat "${soap_tests_config_path}")"
     pattern="${current_magento_base_url}"
-    assertTrue "Contents of '${soap_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${soap_tests_config_content} =~ ${pattern} ]]'
+    assertTrue "Contents of '${soap_tests_config_path}' seems to be invalid ${soap_tests_config_content} =~ ${pattern}" '[[ ${soap_tests_config_content} =~ ${pattern} ]]'
     
     # Functional tests
     functional_tests_config_path="${vagrant_dir}/magento2ce/dev/tests/functional/phpunit.xml"

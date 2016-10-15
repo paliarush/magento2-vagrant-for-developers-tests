@@ -53,18 +53,6 @@ function testNoCustomConfig()
     assertTestsConfigured
 }
 
-function testComposerProjectConfig()
-{
-    current_config_name="composer_project"
-    current_codebase="ce_from_composer"
-    installEnvironment
-    assertVarnishDisabled
-    executeCommonAssertions
-    assertMagentoEditionIsCE
-    assertCeSampleDataNotInstalled
-    assertTestsConfigured
-}
-
 function testEeWithElasticSearchAndSampleData()
 {
     current_config_name="ee_with_elastic_search_and_sample_data"
@@ -143,6 +131,32 @@ function testEeNoNfs()
     assertElasticSearchDisabled
     # There is no automatic switch to EE on project initialization for Windows hosts
     assertMagentoEditionIsCE
+    assertTestsConfigured
+}
+
+function testComposerProjectConfig()
+{
+    current_config_name="composer_project"
+    current_codebase="ce_from_composer"
+    installEnvironment
+    assertVarnishDisabled
+    executeCommonAssertions
+    assertMagentoEditionIsCE
+    assertCeSampleDataNotInstalled
+    assertTestsConfigured
+}
+
+function testComposerProjectEEConfig()
+{
+    current_config_name="composer_project_ee"
+    current_codebase="ee_from_composer"
+    installEnvironment
+    assertVarnishDisabled
+    executeCommonAssertions
+    assertMagentoEditionIsEE
+    assertElasticSearchDisabled
+    assertElasticSearchEnablingWorks
+    assertCeSampleDataNotInstalled
     assertTestsConfigured
 }
 
