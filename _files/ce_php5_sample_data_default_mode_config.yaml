@@ -26,3 +26,5 @@ magento:
   currency: "USD"
   admin_user: "admin"
   admin_password: "123123q"
+  # [Changes applied on m-clear-cache] Available options: developer, production, default
+  mode: "default"

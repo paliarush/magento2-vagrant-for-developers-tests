@@ -428,3 +428,34 @@ function assertTestsConfigured()
     pattern="${current_magento_base_url}"
     assertTrue "Contents of '${functional_tests_config_path}' seems to be invalid ${functional_tests_config_content} =~ ${pattern}" '[[ ${functional_tests_config_content} =~ ${pattern} ]]'
 }
+
+function assertDebugConfigurationWork()
+{
+    echo "${blue}## assertDebugOptionsWork${regular}"
+    echo "## assertDebugOptionsWork" >>${current_log_file_path}
+
+    cd "${vagrant_dir}"
+    sed -i.back 's|magento_storefront: 0|magento_storefront: 1|g' "${vagrant_dir}/etc/config.yaml" >>${current_log_file_path} 2>&1
+    sed -i.back 's|magento_admin: 0|magento_admin: 1|g' "${vagrant_dir}/etc/config.yaml" >>${current_log_file_path} 2>&1
+    bash m-clear-cache >>${current_log_file_path} 2>&1
+
+    magento_home_page_content="$(curl -sL ${current_magento_base_url})"
+    pattern='Magento\\Theme\\Block\\Html\\Footer'
+    assertTrue "Storefront debugging is not enabled. URL: '${current_magento_base_url}'" '[[ ${magento_home_page_content} =~ ${pattern} ]]'
+
+    magento_backend_login_page_content="$(curl -sL "${current_magento_base_url}/admin")"
+    pattern='Magento\\Backend\\Block\\Page\\Copyright'
+    assertTrue "Admin panel debugging is not enabled. URL: '${current_magento_base_url}/admin'" '[[ ${magento_backend_login_page_content} =~ ${pattern} ]]'
+
+    sed -i.back 's|magento_storefront: 1|magento_storefront: 0|g' "${vagrant_dir}/etc/config.yaml" >>${current_log_file_path} 2>&1
+    sed -i.back 's|magento_admin: 1|magento_admin: 0|g' "${vagrant_dir}/etc/config.yaml" >>${current_log_file_path} 2>&1
+    bash m-clear-cache >>${current_log_file_path} 2>&1
+
+    magento_home_page_content="$(curl -sL ${current_magento_base_url})"
+    pattern='Magento\\Theme\\Block\\Html\\Footer'
+    assertFalse "Storefront debugging should not be enabled. URL: '${current_magento_base_url}'" '[[ ${magento_home_page_content} =~ ${pattern} ]]'
+
+    magento_backend_login_page_content="$(curl -sL "${current_magento_base_url}/admin")"
+    pattern='Magento\\Backend\\Block\\Page\\Copyright'
+    assertFalse "Admin panel debugging should not be enabled. URL: '${current_magento_base_url}/admin'" '[[ ${magento_backend_login_page_content} =~ ${pattern} ]]'
+}

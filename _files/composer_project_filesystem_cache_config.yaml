@@ -38,6 +38,8 @@ environment:
   # Possible values: mysql, elasticsearch
   # [To apply changes: m-reinstall]
   search_engine: "mysql"
+  # [To apply changes: m-clear-cache] Possible values: redis, filesystem
+  cache_backend: "filesystem"
 
 magento:
   # [To apply changes: m-switch-to-ce -f OR m-switch-to-ee -f]
@@ -51,8 +53,13 @@ magento:
   currency: "USD"
   admin_user: "admin"
   admin_password: "123123q"
+  # [Changes applied on m-clear-cache] Available options: developer, production, default
+  mode: "developer"
 
 debug:
-  # Enable detailed output from all scripts provided by current vagrant project
-  # [Changes applied immediately]
+  # [Changes applied on m-clear-cache] Enable template path and block name hints on storefront
+  magento_storefront: 0
+  # [Changes applied on m-clear-cache] Enable template path hints in the admin panel
+  magento_admin: 0
+  # [Changes applied immediately] Enable detailed output from all scripts provided by current vagrant project
   vagrant_project: 0

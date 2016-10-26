@@ -51,6 +51,7 @@ function testNoCustomConfig()
     assertMagentoEditionIsCE
     assertCeSampleDataNotInstalled
     assertTestsConfigured
+    assertDebugConfigurationWork
 }
 
 function testEeWithElasticSearchAndSampleData()
@@ -108,7 +109,7 @@ function testCePreferSourceVarnishEnabled()
 
 function testCePhp5WithSampleData()
 {
-    current_config_name="ce_php5_sample_data"
+    current_config_name="ce_php5_sample_data_default_mode"
     current_codebase="ce_with_sample_data"
     installEnvironment
     executeCommonAssertions
@@ -136,7 +137,7 @@ function testEeNoNfs()
 
 function testComposerProjectConfig()
 {
-    current_config_name="composer_project"
+    current_config_name="composer_project_filesystem_cache"
     current_codebase="ce_from_composer"
     installEnvironment
     assertVarnishDisabled
@@ -148,7 +149,7 @@ function testComposerProjectConfig()
 
 function testComposerProjectEEConfig()
 {
-    current_config_name="composer_project_ee"
+    current_config_name="composer_project_ee_production_mode"
     current_codebase="ee_from_composer"
     installEnvironment
     assertVarnishDisabled

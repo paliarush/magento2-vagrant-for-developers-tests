@@ -51,6 +51,8 @@ magento:
   currency: "USD"
   admin_user: "admin"
   admin_password: "123123q"
+  # [Changes applied on m-clear-cache] Available options: developer, production, default
+  mode: "production"
 
 debug:
   # Enable detailed output from all scripts provided by current vagrant project
