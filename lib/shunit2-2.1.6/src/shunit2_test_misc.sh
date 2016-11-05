@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $Id: shunit2_test_misc.sh 322 2011-04-24 00:09:45Z kate.ward@forestent.com $
 # vim:et:ft=sh:sts=2:sw=2
 #

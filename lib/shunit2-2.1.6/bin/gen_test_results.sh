@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $Id: gen_test_results.sh 54 2008-10-21 23:29:23Z kate.ward@forestent.com $
 # vim:et:ft=sh:sts=2:sw=2
 #

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $Id: shunit2_test_macros.sh 299 2010-05-03 12:44:20Z kate.ward@forestent.com $
 # vim:et:ft=sh:sts=2:sw=2
 #

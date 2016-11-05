@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $Id: shunit2_test_asserts.sh 312 2011-03-14 22:41:29Z kate.ward@forestent.com $
 # vim:et:ft=sh:sts=2:sw=2
 #
