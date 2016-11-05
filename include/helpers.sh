@@ -71,7 +71,7 @@ function configureVagrantProject()
     if [ -f ${current_config_path} ]; then
         cp ${current_config_path} "${vagrant_dir}/etc/config.yaml"
     fi
-    cp ${tests_dir}/include/auth.json ${vagrant_dir}/etc/composer/auth.json
+    cp ${tests_dir}/include/auth.json "${vagrant_dir}/etc/composer/auth.json"
 }
 
 function deployVagrantProject()
@@ -88,20 +88,20 @@ function stashMagentoCodebase()
     echo "## stashMagentoCodebase" >>${current_log_file_path}
     if [ -d "${vagrant_dir}/magento2ce" ]; then
         magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}"
-        rm -rf ${magento_stash_dir}
-        mkdir -p ${magento_stash_dir}
+        rm -rf "${magento_stash_dir}"
+        mkdir -p "${magento_stash_dir}"
         mv "${vagrant_dir}/magento2ce" "${magento_stash_dir}/magento2ce"
-        rm -rf ${magento_stash_dir}/magento2ce/var/*
-        rm -rf ${magento_stash_dir}/magento2ce/vendor/*
-        rm -rf ${magento_stash_dir}/magento2ce/pub/static/*
-        rm -f ${magento_stash_dir}/magento2ce/app/etc/config.php
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/api-functional/soap.xml
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/api-functional/rest.xml
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/functional/phpunit.xml
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/functional/etc/config.xml
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/integration/phpunit.xml
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/integration/etc/install-config-mysql.php
-        rm -f ${magento_stash_dir}/magento2ce/dev/tests/unit/phpunit.xml
+        rm -rf "${magento_stash_dir}/magento2ce/var/*"
+        rm -rf "${magento_stash_dir}/magento2ce/vendor/*"
+        rm -rf "${magento_stash_dir}/magento2ce/pub/static/*"
+        rm -f "${magento_stash_dir}/magento2ce/app/etc/config.php"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/api-functional/soap.xml"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/api-functional/rest.xml"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/functional/phpunit.xml"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/functional/etc/config.xml"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/integration/phpunit.xml"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/integration/etc/install-config-mysql.php"
+        rm -f "${magento_stash_dir}/magento2ce/dev/tests/unit/phpunit.xml"
     fi
 }
 
@@ -110,8 +110,8 @@ function unstashMagentoCodebase()
     echo "${grey}## unstashMagentoCodebase${regular}"
     echo "## unstashMagentoCodebase" >>${current_log_file_path}
     magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}/magento2ce"
-    if [ -d ${magento_stash_dir} ]; then
-        mv ${magento_stash_dir} "${vagrant_dir}/magento2ce"
+    if [ -d "${magento_stash_dir}" ]; then
+        mv "${magento_stash_dir}" "${vagrant_dir}/magento2ce"
     fi
 }
 

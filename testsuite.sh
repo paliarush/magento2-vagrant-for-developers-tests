@@ -52,14 +52,21 @@ function testNoCustomConfig()
     assertCeSampleDataNotInstalled
     assertTestsConfigured
     assertDebugConfigurationWork
+    assertRedisCacheIsEnabled
 }
 
 function testEeWithElasticSearchAndSampleData()
 {
     current_config_name="ee_with_elastic_search_and_sample_data"
-    current_codebase="ee_with_sample_data"
+    current_codebase="ee_with_sample_data_2_1"
 
     installEnvironment
+
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce" "2.1"
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ee" "2.1"
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ce-sample-data" "2.1"
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ee-sample-data" "2.1"
+
     executeCommonAssertions
     assertCeSampleDataInstalled
     assertEeSampleDataInstalled
@@ -121,12 +128,16 @@ function testCePhp5WithSampleData()
 function testEeNoNfs()
 {
     current_config_name="ee_no_nfs"
-    current_codebase="ee"
+    current_codebase="ee_2_0"
 
     # TODO: change globally when https://github.com/paliarush/magento2-vagrant-for-developers/issues/58 is unblocked
     vagrant_dir="${tests_dir}/tmp/test/magento2 vagrant"
 
     installEnvironment
+
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce" "2.0"
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ee" "2.0"
+
     executeCommonAssertions
     assertCeSampleDataNotInstalled
     assertElasticSearchDisabled
@@ -145,6 +156,7 @@ function testComposerProjectConfig()
     assertMagentoEditionIsCE
     assertCeSampleDataNotInstalled
     assertTestsConfigured
+    assertRedisCacheIsDisabled
 }
 
 function testComposerProjectEEConfig()
@@ -159,6 +171,7 @@ function testComposerProjectEEConfig()
     assertElasticSearchEnablingWorks
     assertCeSampleDataNotInstalled
     assertTestsConfigured
+    assertRedisCacheIsEnabled
 }
 
 ## Call and Run all Tests

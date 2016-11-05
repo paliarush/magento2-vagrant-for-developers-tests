@@ -257,9 +257,9 @@ function assertPhpStormConfigured()
     misc_config_path="${vagrant_dir}/.idea/misc.xml"
     assertTrue 'PhpStorm was not configured (deployment.xml is missing)' '[[ -f ${deployment_config_path} ]]'
     assertTrue 'PhpStorm was not configured (misc.xml is missing)' '[[ -f ${misc_config_path} ]]'
-    assertTrue 'PhpStorm was not configured (php.xml is missing)' '[[ -f ${vagrant_dir}/.idea/php.xml ]]'
-    assertTrue 'PhpStorm was not configured (vcs.xml is missing)' '[[ -f ${vagrant_dir}/.idea/vcs.xml ]]'
-    assertTrue 'PhpStorm was not configured (webServers.xml is missing)' '[[ -f ${vagrant_dir}/.idea/webServers.xml ]]'
+    assertTrue 'PhpStorm was not configured (php.xml is missing)' '[[ -f "${vagrant_dir}/.idea/php.xml" ]]'
+    assertTrue 'PhpStorm was not configured (vcs.xml is missing)' '[[ -f "${vagrant_dir}/.idea/vcs.xml" ]]'
+    assertTrue 'PhpStorm was not configured (webServers.xml is missing)' '[[ -f "${vagrant_dir}/.idea/webServers.xml" ]]'
 
     deployment_config_content="$(cat "${deployment_config_path}")"
     assertTrue 'PhpStorm configured incorrectly. deployment.xml config is invalid' '[[ ${deployment_config_content} =~ \$PROJECT_DIR\$/magento2ce/app/etc ]]'
@@ -458,4 +458,36 @@ function assertDebugConfigurationWork()
     magento_backend_login_page_content="$(curl -sL "${current_magento_base_url}/admin")"
     pattern='Magento\\Backend\\Block\\Page\\Copyright'
     assertFalse "Admin panel debugging should not be enabled. URL: '${current_magento_base_url}/admin'" '[[ ${magento_backend_login_page_content} =~ ${pattern} ]]'
+}
+
+function assertSourceCodeIsFromBranch()
+{
+    echo "${blue}## assertSourceCodeIsFromBranch (${2})${regular}"
+    echo "## assertSourceCodeIsFromBranch(${1}, ${2})" >>${current_log_file_path}
+
+    source_directory=${1}
+    expected_branch=${2}
+
+    cd "${source_directory}"
+    actual_branch="$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)"
+
+    assertTrue "Git repository in '${source_directory}' was supposed to be switched to '${expected_branch}' branch. Actual: '${actual_branch}'" '[[ ${actual_branch} = ${expected_branch} ]]'
+}
+
+function assertRedisCacheIsEnabled()
+{
+    echo "${blue}## assertRedisCacheIsEnabled${regular}"
+    echo "## assertRedisCacheIsEnabled" >>${current_log_file_path}
+
+    cache_directory="${vagrant_dir}/magento2ce/var/cache"
+    assertFalse "Redis cache seems to be disabled since cache directory '${cache_directory}' was created." '[[ -d ${cache_directory} ]]'
+}
+
+function assertRedisCacheIsDisabled()
+{
+    echo "${blue}## assertRedisCacheIsDisabled${regular}"
+    echo "## assertRedisCacheIsDisabled" >>${current_log_file_path}
+
+    cache_directory="${vagrant_dir}/magento2ce/var/cache"
+    assertTrue "Redis cache seems to be enabled since cache directory '${cache_directory}' was not created." '[[ -d ${cache_directory} ]]'
 }

@@ -8,8 +8,8 @@ composer_project:
   url: "https://repo.magento.com"
 
 repository_url:
-  ce: "git@github.com:magento/magento2ce.git"
-  ee: "git@github.com:magento/magento2ee.git"
+  ce: "git@github.com:magento/magento2ce.git::2.0"
+  ee: "git@github.com:magento/magento2ee.git::2.0"
 guest:
   # NFS will be used for folder synchronization on *nix and OSX hosts by default
   use_nfs: 0
