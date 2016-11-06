@@ -38,13 +38,13 @@ _shunit_log_fail()
 {
   _shunit_msg_=$1
 
-  __shunit_case_errors="${__shunit_case_errors}<failure type=\"${__SHUNIT_ASSERT_MSG_PREFIX}\" message=\"${_shunit_msg_}\"/>"
+  __shunit_case_errors="${__shunit_case_errors}<failure type=\"${__SHUNIT_ASSERT_MSG_PREFIX}\" message=\"$(echo ${_shunit_msg_} | sed 's|||g')\"/>"
 
   unset _shunit_msg_
 }
 
 # log an unexpected failure into the test case error buffer
-_shunit_log_error() 
+_shunit_log_error()
 {
   _level_=$1
   shift
@@ -834,7 +834,7 @@ _shunit_cleanup()
 #   None
 _shunit_execSuite()
 {
-  
+
   # loop over test cases
   for _shunit_case_ in ${__shunit_suite}; do
     __shunit_testSuccess=${SHUNIT_TRUE}
@@ -853,6 +853,7 @@ _shunit_execSuite()
 
     # execute the test
     echo "${_shunit_case_}"
+    echo "${bold}====${_shunit_case_}====${regular}"
 #    eval ${_shunit_test_}
     eval ${_shunit_case_}
 
@@ -923,7 +924,7 @@ EOF
   # cleanup buffer files
   rm -f ${__shunit_system_out}
   rm -f ${__shunit_system_err}
- 
+
 
 #  _shunit_failures_=''
 #  _shunit_skipped_=''
@@ -983,8 +984,8 @@ _shunit_assertFail()
   __shunit_testSuccess=${SHUNIT_FALSE}
   __shunit_assertsFailed=`expr ${__shunit_assertsFailed} + 1`
   __shunit_assertsTotal=`expr ${__shunit_assertsTotal} + 1`
-#  echo "${__SHUNIT_ASSERT_MSG_PREFIX}${_shunit_msg_}"
-  __shunit_case_errors="${__shunit_case_errors}<failure type=\"${__SHUNIT_ASSERT_MSG_PREFIX}\" message=\"${_shunit_msg_}\"/>"
+  echo "${red}ASSERTION FAILED: ${_shunit_msg_}${regular}"
+  __shunit_case_errors="${__shunit_case_errors}<failure type=\"${__SHUNIT_ASSERT_MSG_PREFIX}\" message=\"$(echo ${_shunit_msg_} | sed 's|||g')\"/>"
 
   unset _shunit_msg_
 }
@@ -1144,8 +1145,8 @@ __shunit_system_out=$(mktemp 'shunit-out.XXXX')
 __shunit_system_err=$(mktemp 'shunit-err.XXXX')
 
 # alter file descriptors
-exec 6>&1 7>&2
-exec >> ${__shunit_system_out} 2>> ${__shunit_system_err}
+# exec 6>&1 7>&2
+# exec >> ${__shunit_system_out} 2>> ${__shunit_system_err}
 
 # execute the oneTimeSetUp function (if it exists)
 oneTimeSetUp | tee -a ${__shunit_system_out} 2>&1
@@ -1184,8 +1185,8 @@ __shunit_suite_duration=$(echo ${__shunit_suite_endtime} - ${__shunit_suite_star
 oneTimeTearDown | tee -a ${__shunit_system_out} 2>&1
 
 # restore file descriptors
-exec 1>&6 2>&7
-exec 6>&- 7>&-
+# exec 1>&6 2>&7
+# exec 6>&- 7>&-
 
 # generate the report
 #_shunit_generateReport

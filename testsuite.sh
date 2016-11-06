@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+SHUNIT_OUTPUTDIR="./reports"
+
 ## Includes
 
 source include/configuration.sh

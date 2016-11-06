@@ -11,9 +11,9 @@ current_codebase=""
 current_magento_base_url=""
 
 # Colors for CLI output
-bold=$(tput bold)
-green=$(tput setaf 2)
-blue=$(tput setaf 4)
-red=$(tput setaf 1)
-grey=$(tput setaf 7)
-regular=$(tput sgr0)
+bold=$(printf "\e[1m")
+green=$(printf "\e[32m")
+blue=$(printf "\e[34m")
+red=$(printf "\e[31m")
+grey=$(printf "\e[37m")
+regular=$(printf "\e[m")
