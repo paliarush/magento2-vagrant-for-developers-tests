@@ -852,7 +852,6 @@ _shunit_execSuite()
     _shunit_case_starttime_=$(date '+%s')
 
     # execute the test
-    echo "${_shunit_case_}"
     echo "${bold}====${_shunit_case_}====${regular}"
 #    eval ${_shunit_test_}
     eval ${_shunit_case_}
@@ -1145,8 +1144,8 @@ __shunit_system_out=$(mktemp 'shunit-out.XXXX')
 __shunit_system_err=$(mktemp 'shunit-err.XXXX')
 
 # alter file descriptors
-# exec 6>&1 7>&2
-# exec >> ${__shunit_system_out} 2>> ${__shunit_system_err}
+exec 6>&1 7>&2
+exec >> ${__shunit_system_out} 2>> ${__shunit_system_err}
 
 # execute the oneTimeSetUp function (if it exists)
 oneTimeSetUp | tee -a ${__shunit_system_out} 2>&1
@@ -1185,8 +1184,8 @@ __shunit_suite_duration=$(echo ${__shunit_suite_endtime} - ${__shunit_suite_star
 oneTimeTearDown | tee -a ${__shunit_system_out} 2>&1
 
 # restore file descriptors
-# exec 1>&6 2>&7
-# exec 6>&- 7>&-
+exec 1>&6 2>&7
+exec 6>&- 7>&-
 
 # generate the report
 #_shunit_generateReport

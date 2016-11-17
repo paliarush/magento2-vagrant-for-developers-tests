@@ -6,9 +6,12 @@ vagrant_dir="${tests_dir}/tmp/test/magento2-vagrant"
 current_log_file_path="${tests_dir}/tmp/test/current-test.log"
 magento_codebase_stash_dir="${tests_dir}/tmp/testsuite/codebases"
 logs_dir="${tests_dir}/logs"
+reports_dir="${tests_dir}/reports"
 current_config_name=""
 current_codebase=""
 current_magento_base_url=""
+
+SHUNIT_OUTPUTDIR="${reports_dir}"
 
 # Colors for CLI output
 bold=$(printf "\e[1m")

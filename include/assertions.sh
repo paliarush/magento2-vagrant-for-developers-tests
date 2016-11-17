@@ -99,7 +99,7 @@ function assertApacheRestartWorks()
     echo "## assertApacheRestartWorks" >>${current_log_file_path}
     cd "${vagrant_dir}"
     cmd_output="$(vagrant ssh -c 'sudo service apache2 restart' >>${current_log_file_path} 2>&1)"
-    pattern="\[ OK \]"
+    pattern="(\[ OK \]|\.\.\.done)"
     output_log="$(tail -n2 ${current_log_file_path})"
     assertTrue 'Apache restart attempt failed' '[[ ${output_log} =~ ${pattern} ]]'
 }

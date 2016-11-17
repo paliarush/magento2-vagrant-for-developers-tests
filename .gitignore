@@ -1,3 +1,5 @@
 /.idea
 /include/configuration.sh
 /include/auth.json
+/shunit-out.*
+/shunit-err.*

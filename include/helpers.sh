@@ -133,6 +133,9 @@ function stashLogs()
 function clearLogs()
 {
     rm -f ${logs_dir}/*
+    rm -f ${reports_dir}/*
+    rm -f ${tests_dir}/shunit-err.*
+    rm -f ${tests_dir}/shunit-out.*
 }
 
 function clearTestTmp()
