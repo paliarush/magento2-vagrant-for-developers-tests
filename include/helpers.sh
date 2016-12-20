@@ -65,11 +65,15 @@ function upgradeVagrantProject()
 
 function upgradeComposerBasedMagento()
 {
+    cd "${vagrant_dir}"
+    echo "${grey}## upgradeComposerBasedMagento (to 2.1.2)${regular}"
+    echo "## upgradeComposerBasedMagento (to 2.1.2)" >>${current_log_file_path}
+    bash m-composer require magento/product-community-edition 2.1.2 --no-update >>${current_log_file_path} 2>&1
+    bash m-switch-to-ce -fu >>${current_log_file_path} 2>&1
     echo "${grey}## upgradeComposerBasedMagento (to 2.1.3)${regular}"
     echo "## upgradeComposerBasedMagento (to 2.1.3)" >>${current_log_file_path}
-    cd "${vagrant_dir}"
     bash m-composer require magento/product-community-edition 2.1.3 --no-update >>${current_log_file_path} 2>&1
-    bash m-switch-to-ce -fu >>${current_log_file_path} 2>&1
+    bash m-switch-to-ee -fu >>${current_log_file_path} 2>&1
 }
 
 function configureVagrantProject()
