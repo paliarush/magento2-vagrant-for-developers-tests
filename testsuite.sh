@@ -17,6 +17,7 @@ function oneTimeSetUp
 function setUp()
 {
     debug_vagrant_project=0
+    skip_codebase_stash=0
 }
 
 function tearDown()
@@ -149,7 +150,7 @@ function testEeNoNfs()
 function testComposerProjectConfig()
 {
     current_config_name="composer_project_filesystem_cache"
-    current_codebase="ce_from_composer"
+    skip_codebase_stash=1
     installEnvironment
     assertVarnishDisabled
     executeCommonAssertions
@@ -162,7 +163,7 @@ function testComposerProjectConfig()
 function testComposerProjectEEConfig()
 {
     current_config_name="composer_project_ee_production_mode"
-    current_codebase="ee_from_composer"
+    skip_codebase_stash=1
     installEnvironment
     assertVarnishDisabled
     executeCommonAssertions
@@ -172,6 +173,15 @@ function testComposerProjectEEConfig()
     assertCeSampleDataNotInstalled
     assertTestsConfigured
     assertRedisCacheIsEnabled
+}
+
+function testUpgradeComposerProject()
+{
+    current_config_name="upgrade_composer_project"
+    skip_codebase_stash=1
+    installEnvironment
+    upgradeComposerBasedMagento
+    executeCommonAssertions
 }
 
 ## Call and Run all Tests

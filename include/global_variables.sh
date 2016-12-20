@@ -5,6 +5,7 @@ test_config_dir="${tests_dir}/_files"
 vagrant_dir="${tests_dir}/tmp/test/magento2-vagrant"
 current_log_file_path="${tests_dir}/tmp/test/current-test.log"
 magento_codebase_stash_dir="${tests_dir}/tmp/testsuite/codebases"
+skip_codebase_stash=0
 logs_dir="${tests_dir}/logs"
 current_config_name=""
 current_codebase=""

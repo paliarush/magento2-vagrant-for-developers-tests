@@ -23,14 +23,14 @@ function installEnvironmentWithUpgrade()
 
 function downloadVagrantProject()
 {
-    echo "${grey}## downloadVagrantProject${regular}"
-    echo "## downloadVagrantProject" >>${current_log_file_path}
     cd ${tests_dir}
     if [[ ! -z "${vagrant_project_local_path}" ]]; then
-        echo "${grey}## copy vagrant project from local path${regular}"
-        echo "## copy vagrant project from local path" >>${current_log_file_path}
+        echo "${grey}## copyVagrantProjectFromLocalPath${regular}"
+        echo "## copyVagrantProjectFromLocalPath" >>${current_log_file_path}
         cp -r "${vagrant_project_local_path}" "${vagrant_dir}"
     else
+        echo "${grey}## downloadVagrantProject${regular}"
+        echo "## downloadVagrantProject" >>${current_log_file_path}
         git clone ${vagrant_project_repository_url} "${vagrant_dir}" >>${current_log_file_path} 2>&1
         cd "${vagrant_dir}"
         git checkout ${vagrant_project_branch} >>${current_log_file_path} 2>&1
@@ -63,6 +63,15 @@ function upgradeVagrantProject()
     vagrant reload >>${current_log_file_path} 2>&1
 }
 
+function upgradeComposerBasedMagento()
+{
+    echo "${grey}## upgradeComposerBasedMagento (to 2.1.3)${regular}"
+    echo "## upgradeComposerBasedMagento (to 2.1.3)" >>${current_log_file_path}
+    cd "${vagrant_dir}"
+    bash m-composer require magento/product-community-edition 2.1.3 --no-update >>${current_log_file_path} 2>&1
+    bash m-switch-to-ce -fu >>${current_log_file_path} 2>&1
+}
+
 function configureVagrantProject()
 {
     echo "${grey}## configureVagrantProject${regular}"
@@ -84,9 +93,9 @@ function deployVagrantProject()
 
 function stashMagentoCodebase()
 {
-    echo "${grey}## stashMagentoCodebase${regular}"
-    echo "## stashMagentoCodebase" >>${current_log_file_path}
-    if [ -d "${vagrant_dir}/magento2ce" ]; then
+    if [[ ${skip_codebase_stash} == 0 ]] && [[ -d "${vagrant_dir}/magento2ce" ]]; then
+        echo "${grey}## stashMagentoCodebase${regular}"
+        echo "## stashMagentoCodebase" >>${current_log_file_path}
         magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}"
         rm -rf "${magento_stash_dir}"
         mkdir -p "${magento_stash_dir}"
@@ -107,10 +116,10 @@ function stashMagentoCodebase()
 
 function unstashMagentoCodebase()
 {
-    echo "${grey}## unstashMagentoCodebase${regular}"
-    echo "## unstashMagentoCodebase" >>${current_log_file_path}
     magento_stash_dir="${magento_codebase_stash_dir}/${current_codebase}/magento2ce"
-    if [ -d "${magento_stash_dir}" ]; then
+    if [[ ${skip_codebase_stash} == 0 ]] && [[ -d "${magento_stash_dir}" ]]; then
+        echo "${grey}## unstashMagentoCodebase${regular}"
+        echo "## unstashMagentoCodebase" >>${current_log_file_path}
         mv "${magento_stash_dir}" "${vagrant_dir}/magento2ce"
     fi
 }
