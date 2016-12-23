@@ -137,6 +137,15 @@ function hardReboot()
     vagrant up >>${current_log_file_path} 2>&1
 }
 
+function virtualMachineSuspendAndResume()
+{
+    echo "${grey}## virtualMachineSuspendAndResume${regular}"
+    echo "## virtualMachineSuspendAndResume" >>${current_log_file_path}
+    cd "${vagrant_dir}"
+    vagrant suspend >>${current_log_file_path} 2>&1
+    vagrant resume >>${current_log_file_path} 2>&1
+}
+
 function stashLogs()
 {
     log_file_path="${logs_dir}/${current_config_name}.log"

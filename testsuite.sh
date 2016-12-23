@@ -89,8 +89,6 @@ function testEeWithElasticSearchAndSampleData()
     assertCeSampleDataInstalled
     assertEeSampleDataInstalled
 
-    hardReboot
-    executeCommonAssertions
     assertTestsConfigured
 }
 
@@ -109,10 +107,17 @@ function testCePreferSourceVarnishEnabled()
     current_codebase="ce"
     debug_vagrant_project=1
     installEnvironment
+
     assertVarnishEnabled
     executeCommonAssertions
     assertCeSampleDataNotInstalled
     assertTestsConfigured
+
+    virtualMachineSuspendAndResume
+    executeCommonAssertions
+
+    hardReboot
+    executeCommonAssertions
 }
 
 function testCePhp5WithSampleData()
