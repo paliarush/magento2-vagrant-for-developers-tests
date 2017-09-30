@@ -52,7 +52,7 @@ function assertMagentoFrontendAccessible()
     echo "## assertMagentoFrontendAccessible" >>${current_log_file_path}
     cd ${tests_dir}
     magento_home_page_content="$(curl -sL ${current_magento_base_url})"
-    pattern="Magento. All rights reserved."
+    pattern="Magento.* All rights reserved."
     assertTrue "Magento was installed but main page is not accessible. URL: '${current_magento_base_url}'" '[[ ${magento_home_page_content} =~ ${pattern} ]]'
 }
 
@@ -150,9 +150,9 @@ function assertMagentoCliWorks()
     bash m-bin-magento list >>${current_log_file_path} 2>&1
     pattern="theme:uninstall"
     if [[ ${debug_vagrant_project} -eq 1 ]]; then
-        tail_number=55
+        tail_number=75
     else
-        tail_number=2
+        tail_number=10
     fi
     output_log="$(tail -n${tail_number} ${current_log_file_path})"
     assertTrue "${red}Magento CLI does not work.${regular}" '[[ ${output_log} =~ ${pattern} ]]'

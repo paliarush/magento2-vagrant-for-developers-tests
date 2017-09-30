@@ -120,10 +120,10 @@ function testCePreferSourceVarnishEnabled()
     executeCommonAssertions
 }
 
-function testCePhp5WithSampleData()
+function testCe21Php5WithSampleData()
 {
-    current_config_name="ce_php5_sample_data_default_mode"
-    current_codebase="ce_with_sample_data"
+    current_config_name="ce21_php5_sample_data_default_mode"
+    current_codebase="ce21_with_sample_data"
     installEnvironment
     executeCommonAssertions
     assertCeSampleDataInstalled
