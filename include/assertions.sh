@@ -200,6 +200,20 @@ function assertVarnishEnabled()
 
     listenerOnPort8080="$(vagrant ssh -c 'sudo netstat -tulnp | grep ':::8080[^0-9]'')"
     assertTrue 'Apache is not listening on port 8080' '[[ ${listenerOnPort8080} =~ apache2 ]]'
+
+    varnish_version="$(vagrant ssh -c 'varnishd -V')"
+    version_pattern="4\.[0-9]+\.[0-9]+"
+    assertTrue 'Varnish version should be 4.x.x' '[[ ${varnish_version} =~ ${version_pattern} ]]'
+}
+
+function assertMainPageServedByVarnish()
+{
+    echo "${blue}## assertMainPageServedByVarnish${regular}"
+    echo "## assertMainPageServedByVarnish" >>${current_log_file_path}
+
+    curl "${current_magento_base_url}" > /dev/null 2>&1
+    is_varnish_hit="$(curl "${current_magento_base_url}" -v 2>&1 | grep "X-Magento-Cache-Debug: HIT")"
+    assertFalse 'Main page is not served by Varnish (or Magento is not in Developer mode)' '[[ ${is_varnish_hit} == '' ]]'
 }
 
 function assertVarnishDisablingWorks()

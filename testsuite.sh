@@ -163,6 +163,9 @@ function testComposerProjectConfig()
     assertCeSampleDataNotInstalled
     assertTestsConfigured
     assertRedisCacheIsDisabled
+
+    assertVarnishEnablingWorks
+    assertMainPageServedByVarnish
 }
 
 function testComposerProjectEEConfig()
