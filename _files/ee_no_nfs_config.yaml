@@ -18,8 +18,7 @@ guest:
   ip_address: "192.168.10.2"
   forwarded_ssh_port: 3000
 environment:
-  # If set to 0, PHP 5 will be installed
-  use_php7: 1
+  php_version: "7.0"
   composer_prefer_source: 0
 magento:
   host_name: "magento2.vagrant2"
