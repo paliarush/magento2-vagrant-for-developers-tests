@@ -44,7 +44,7 @@ function downloadBaseVersionOfVagrantProject()
     cd ${tests_dir}
     git clone git@github.com:paliarush/magento2-vagrant-for-developers.git "${vagrant_dir}" >>${current_log_file_path} 2>&1
     cd "${vagrant_dir}"
-    git checkout tags/v2.0.0 >>${current_log_file_path} 2>&1
+    git checkout tags/v2.2.0 >>${current_log_file_path} 2>&1
     # Make sure that older box version is used
     sed -i.back 's|config.vm.box_version = "~> 1.0"|config.vm.box_version = "= 1.0"|g' "${vagrant_dir}/Vagrantfile" >>${current_log_file_path} 2>&1
     echo '{"github-oauth": {"github.com": "sampletoken"}}' >"${vagrant_dir}/etc/composer/auth.json"
