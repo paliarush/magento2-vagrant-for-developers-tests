@@ -55,51 +55,51 @@ function testNoCustomConfig()
     assertDebugConfigurationWork
     assertRedisCacheIsEnabled
 }
-
-function testEeWithElasticSearchAndSampleData()
-{
-    current_config_name="ee_with_elastic_search_and_sample_data"
-    current_codebase="ee_with_sample_data_2_1"
-
-    installEnvironment
-
-    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce" "2.1"
-    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ee" "2.1"
-    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ce-sample-data" "2.1"
-    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ee-sample-data" "2.1"
-
-    executeCommonAssertions
-    assertCeSampleDataInstalled
-    assertEeSampleDataInstalled
-    assertMagentoEditionIsEE
-
-    assertElasticSearchEnabled
-    assertElasticSearchDisablingWorks
-    assertElasticSearchEnablingWorks
-
-    assertMagentoSwitchToCeWorks
-    assertMagentoFrontendAccessible
-    assertMagentoEditionIsCE
-    assertCeSampleDataInstalled
-    assertEeSampleDataNotInstalled
-
-    assertMagentoSwitchToEeWorks
-    assertMagentoFrontendAccessible
-    assertMagentoEditionIsEE
-    assertCeSampleDataInstalled
-    assertEeSampleDataInstalled
-
-    assertTestsConfigured
-}
-
-function testUpgradeNoCustomConfig()
-{
-    current_config_name="upgrade_no_custom_config"
-    current_codebase="ce"
-    installEnvironmentWithUpgrade
-    executeCommonAssertions
-    assertCeSampleDataNotInstalled
-}
+#
+#function testEeWithElasticSearchAndSampleData()
+#{
+#    current_config_name="ee_with_elastic_search_and_sample_data"
+#    current_codebase="ee_with_sample_data_2_1"
+#
+#    installEnvironment
+#
+#    assertSourceCodeIsFromBranch "${vagrant_dir}/magento" "2.1"
+#    assertSourceCodeIsFromBranch "${vagrant_dir}/magento/magento2ee" "2.1"
+#    assertSourceCodeIsFromBranch "${vagrant_dir}/magento/magento-sample-data" "2.1"
+#    assertSourceCodeIsFromBranch "${vagrant_dir}/magento/magento2ee-sample-data" "2.1"
+#
+#    executeCommonAssertions
+#    assertCeSampleDataInstalled
+#    assertEeSampleDataInstalled
+#    assertMagentoEditionIsEE
+#
+#    assertElasticSearchEnabled
+#    assertElasticSearchDisablingWorks
+#    assertElasticSearchEnablingWorks
+#
+#    assertMagentoSwitchToCeWorks
+#    assertMagentoFrontendAccessible
+#    assertMagentoEditionIsCE
+#    assertCeSampleDataInstalled
+#    assertEeSampleDataNotInstalled
+#
+#    assertMagentoSwitchToEeWorks
+#    assertMagentoFrontendAccessible
+#    assertMagentoEditionIsEE
+#    assertCeSampleDataInstalled
+#    assertEeSampleDataInstalled
+#
+#    assertTestsConfigured
+#}
+#
+#function testUpgradeNoCustomConfig()
+#{
+#    current_config_name="upgrade_no_custom_config"
+#    current_codebase="ce"
+#    installEnvironmentWithUpgrade
+#    executeCommonAssertions
+#    assertCeSampleDataNotInstalled
+#}
 
 ## Call and Run all Tests
 . "lib/shunit2-2.1.6/src/shunit2"

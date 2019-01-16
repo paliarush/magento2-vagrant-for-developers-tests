@@ -52,8 +52,8 @@ function testEeNoNfs()
 
     installEnvironment
 
-    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce" "2.0"
-    assertSourceCodeIsFromBranch "${vagrant_dir}/magento2ce/magento2ee" "2.0"
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento" "2.0"
+    assertSourceCodeIsFromBranch "${vagrant_dir}/magento/magento2ee" "2.0"
 
     executeCommonAssertions
     assertCeSampleDataNotInstalled
