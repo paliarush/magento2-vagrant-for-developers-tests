@@ -3,7 +3,7 @@
 # Path to local copy of vagrant project has higher priority over repository
 vagrant_project_local_path=""
 
-vagrant_project_repository_url="git@github.com:paliarush/magento2-vagrant-for-developers.git"
-vagrant_project_branch="2.0"
+vagrant_project_repository_url="git@github.com:magento/magento2-kubernetes-devbox.git"
+vagrant_project_branch="prototype"
 
 delete_test_project_on_tear_down=1

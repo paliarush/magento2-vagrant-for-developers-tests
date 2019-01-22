@@ -47,13 +47,13 @@ function testNoCustomConfig()
     current_config_name="no_custom_config"
     current_codebase="ce"
     installEnvironment
-    assertVarnishDisabled
+#    assertVarnishDisabled
     executeCommonAssertions
-    assertMagentoEditionIsCE
-    assertCeSampleDataNotInstalled
-    assertTestsConfigured
-    assertDebugConfigurationWork
-    assertRedisCacheIsEnabled
+#    assertMagentoEditionIsCE
+#    assertCeSampleDataNotInstalled
+#    assertTestsConfigured
+#    assertDebugConfigurationWork
+#    assertRedisCacheIsEnabled
 }
 #
 #function testEeWithElasticSearchAndSampleData()

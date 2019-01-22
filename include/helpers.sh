@@ -5,6 +5,8 @@ function installEnvironment()
     stashMagentoCodebase
     clearTestTmp
     downloadVagrantProject
+    # TODO: NFS configuration scripts requires sudo, while the rest of the test must not be run with sudo
+    bash "${vagrant_project_local_path}/scripts/host/configure_nfs_exports.sh" >>${current_log_file_path} 2>&1
     unstashMagentoCodebase
     configureVagrantProject
     deployVagrantProject
@@ -92,7 +94,8 @@ function deployVagrantProject()
     echo "${grey}## deployVagrantProject${regular}"
     echo "## deployVagrantProject" >>${current_log_file_path}
     cd "${vagrant_dir}"
-    bash init_project.sh >>${current_log_file_path} 2>&1
+    # TODO: Force is required because there is no projects isolation yet and only one project can exist at a time
+    bash init_project.sh -f >>${current_log_file_path} 2>&1
 }
 
 function stashMagentoCodebase()
@@ -163,7 +166,8 @@ function clearTestTmp()
     echo "## clearTestTmp" >>${current_log_file_path}
     if [ -e "${vagrant_dir}" ]; then
         cd "${vagrant_dir}"
-        vagrant destroy -f &>/dev/null
+        minikube stop &>/dev/null
+        minikube delete &>/dev/null
         cd ${tests_dir}
         rm -rf "${vagrant_dir}"
     fi
