@@ -95,7 +95,7 @@ function deployVagrantProject()
     echo "## deployVagrantProject" >>${current_log_file_path}
     cd "${vagrant_dir}"
     # TODO: Force is required because there is no projects isolation yet and only one project can exist at a time
-    bash init_project.sh -f >>${current_log_file_path} 2>&1
+    helm init-magento -f >>${current_log_file_path} 2>&1
 }
 
 function stashMagentoCodebase()
